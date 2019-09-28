@@ -42,6 +42,7 @@ app.config.update({
 @app.route('/')
 def index():
     latest = sorted(pages, reverse=True, key=lambda p: p.meta['date'])
+    #collect all tags
     tags = {}
     for p in pages:
         for tag in p.meta.get('tags', []):
@@ -50,7 +51,16 @@ def index():
             else:
                 tags[tag] += 1
     sorted_tags = sorted(tags.items(), reverse=True, key=lambda x: x[1])
-    return render_template('index.html', pages=latest, tags=sorted_tags)
+    #collect publish dates
+    dates = {}
+    for p in pages:
+        mmyyyy = p.meta['date'].strftime("%B %Y")
+        if mmyyyy not in dates:
+            dates[mmyyyy] = 1
+        else:
+            dates[mmyyyy] += 1
+    sorted_dates = sorted(dates.items(), reverse=True, key=lambda x: x[1])
+    return render_template('index.html', pages=latest, tags=sorted_tags, dates=sorted_dates)
 
 @app.route('/<path:path>/')
 def page(path):
@@ -61,6 +71,11 @@ def page(path):
 def tag(tag):
     tagged = [p for p in pages if tag in p.meta.get('tags', [])]
     return render_template('tag.html', pages=tagged, tag=tag)
+
+@app.route('/archive/<string:date>/')
+def archive(date):
+    archive = [p for p in pages if date == p.meta.get('date', []).strftime("%B %Y")]
+    return render_template('archive.html', pages=archive, date=date)
 
 @app.route('/pygments.css')
 def pygments_css():

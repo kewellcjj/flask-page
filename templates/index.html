@@ -29,16 +29,22 @@
             <div class="p-4">
                 <h4 class="font-italic">Tags</h4>
                 <ol class="list-unstyled mb-0">
-                        {% if tags|length %}
-                        {% for tag in tags %}
-        
-                        <li><a href="{{ url_for('tag', tag=tag[0]) }}">#{{ tag[0]|capitalize }}</a></li>
-                        {% endfor %}
-                        {% endif %}
-                  </ol>
+                    {% if tags|length %}
+                    {% for tag in tags %}
+                    <li><a href="{{ url_for('tag', tag=tag[0]) }}">#{{ tag[0]|capitalize }} ({{ tag[1] }})</a></li>
+                    {% endfor %}
+                    {% endif %}
+                </ol>
             </div>
             <div class="p-4">
                 <h4 class="font-italic">Archives</h4>
+                <ol class="list-unstyled mb-0">
+                    {% if dates|length %}
+                    {% for date in dates %}
+                    <li><a href="{{ url_for('archive', date=date[0]) }}">{{ date[0] }} ({{ date[1] }})</a></li>
+                    {% endfor %}
+                    {% endif %}
+                </ol>
             </div>
         </aside>
     </div>
