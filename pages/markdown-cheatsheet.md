@@ -85,6 +85,18 @@ alert(s);
 s = "Python syntax highlighting"
 print s
 ```
+
+```python
+from bs4 import BeautifulSoup as bs
+
+# fix unnested html code
+def prettify(html):
+    soup = bs(html, 'html.parser')
+    return soup.prettify()
+    
+# register custom filter in flask app
+app.jinja_env.filters['prettify']=prettify
+```
  
 ```
 No language indicated, so no syntax highlighting. 

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, render_template_string
 from flask_flatpages import FlatPages, pygments_style_defs
 import markdown
+from bs4 import BeautifulSoup as bs
 
 DEBUG = True
 FLATPAGES_AUTO_RELOAD = DEBUG
@@ -9,6 +10,14 @@ FLATPAGES_EXTENSION = '.md'
 app = Flask(__name__)
 app.config.from_object(__name__)
 pages = FlatPages(app)
+
+# fix unnested html code
+def prettify(html):
+    soup = bs(html, 'html.parser')
+    return soup.prettify()
+
+# register custom filter in flask app
+app.jinja_env.filters['prettify']=prettify
 
 def my_renderer(text):
     """Inject the markdown rendering into the jinga template"""

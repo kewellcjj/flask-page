@@ -11,7 +11,7 @@
             <div class="blog-post">
                 <h2 class="blog-post-tile" href="{{ url_for('page', path=page.path) }}">{{ page.title }}</h2>
                 <p class="blog-post-meta">{{ page.date.strftime("%B %d, %Y") }}</p>
-                    <p>{{ page }}</p>
+                    <p>{{ page.html|truncate(250)|prettify|safe }}</p>
             </div>
             
             {% if page.meta.tags|length %}
