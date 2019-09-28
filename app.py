@@ -12,14 +12,11 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 pages = FlatPages(app)
 
-# fix unnested html code
+# fix unnested html code, and register to the jinja filter
 @app.template_filter('prettify')
 def prettify(html):
     soup = bs(html, 'html.parser')
     return soup.prettify()
-
-# register custom filter in flask app\
-# app.jinja_env.filters['prettify']=prettify
 
 def my_renderer(text):
     """Inject the markdown rendering into the jinga template"""
@@ -45,7 +42,15 @@ app.config.update({
 @app.route('/')
 def index():
     latest = sorted(pages, reverse=True, key=lambda p: p.meta['date'])
-    return render_template('index.html', pages=latest)
+    tags = {}
+    for p in pages:
+        for tag in p.meta.get('tags', []):
+            if tag not in tags:
+                tags[tag] = 1
+            else:
+                tags[tag] += 1
+    sorted_tags = sorted(tags.items(), reverse=True, key=lambda x: x[1])
+    return render_template('index.html', pages=latest, tags=sorted_tags)
 
 @app.route('/<path:path>/')
 def page(path):
@@ -59,14 +64,14 @@ def tag(tag):
 
 @app.route('/pygments.css')
 def pygments_css():
-    return pygments_style_defs('tango'), 200, {'Content-Type': 'text/css'}
+    return pygments_style_defs('default'), 200, {'Content-Type': 'text/css'}
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         try:
             if int(sys.argv[1])>2000:
-                app.run(debug=True, port=sys.argv[1])
+                app.run(port=sys.argv[1])
         except ValueError:
             print("Invalid port number")
     else:
-        app.run(debug=True)
+        app.run()

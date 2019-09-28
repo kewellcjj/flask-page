@@ -11,14 +11,14 @@
             <div class="blog-post">
                 <h2 class="blog-post-tile" href="{{ url_for('page', path=page.path) }}">{{ page.title }}</h2>
                 <p class="blog-post-meta">{{ page.date.strftime("%B %d, %Y") }}</p>
-                    <p>{{ page.html|truncate(250)|prettify|safe }}</p>
+                <p>{{ page.html|truncate(250)|prettify|safe }}</p>
             </div>
-            
+
             {% if page.meta.tags|length %}
             <br>
             {% for page_tag in page.meta.tags %}
 
-            <a href="{{ url_for('tag', tag=page_tag) }}">#{{ page_tag }}</a>
+            <a href="{{ url_for('tag', tag=page_tag) }}">#{{ page_tag|capitalize }}</a>
             {% endfor %}
             {% endif %}
             {% else %}
@@ -28,10 +28,18 @@
         <aside class="col-md-4 blog-sidebar">
             <div class="p-4">
                 <h4 class="font-italic">Tags</h4>
+                <ol class="list-unstyled mb-0">
+                        {% if tags|length %}
+                        {% for tag in tags %}
+        
+                        <li><a href="{{ url_for('tag', tag=tag[0]) }}">#{{ tag[0]|capitalize }}</a></li>
+                        {% endfor %}
+                        {% endif %}
+                  </ol>
             </div>
             <div class="p-4">
-                    <h4 class="font-italic">Archives</h4>
-                </div>
+                <h4 class="font-italic">Archives</h4>
+            </div>
         </aside>
     </div>
 </main>
