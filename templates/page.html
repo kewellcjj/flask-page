@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="markdown-body">
-    <h2>{{ page.title }}</h2>
-    {{ page.html|safe }}
+<div>
+    <h2 class="blog-post-title">{{ page.title }}</h2>
+    <p class="blog-post-meta">{{ page.date.strftime("%B %d, %Y") }}</p>
+    <div  class="markdown-body">
+    <p>{{ page.html|safe }}</p>
+    </div>  
 </div>
 {% endblock content %}

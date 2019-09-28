@@ -3,30 +3,29 @@
 {% block content %}
 <main role="main" clss="container">
     <div class="row">
-        <div class="col-md-8 blog-main">
-            <h3 class="pb-4 mb-4 font-italic border-bottom">
+        <div class="col-md-9 blog-main p-4">
+            <!-- <h3 class="pb-4 mb-4 font-italic border-bottom">
                 Recent Posts
-            </h3>
+            </h3> -->
             {% for page in pages %}
-            <div class="blog-post">
+            <div class="blog-post mb-2">
                 <h2 class="blog-post-tile">{{ page.title }}</h2>
-                {% if page.meta.tags|length %}
+                <!-- {% if page.meta.tags|length %}
                 {% for page_tag in page.meta.tags %}
                 <a href="{{ url_for('tag', tag=page_tag) }}">#{{ page_tag|capitalize }}</a>
                 {% endfor %}
-                {% endif %}
+                {% endif %} -->
                 <p class="blog-post-meta">{{ page.date.strftime("%B %d, %Y") }}</p>
                 <p>{{ page.html|truncate(250)|prettify|safe }}</p>
+                <p>
+                    <a href="{{ url_for('page', path=page.path) }}">Read More</a>
+                </p>
             </div>
-
-            <p>
-                <a href="{{ url_for('page', path=page.path) }}">Read More</a>
-            </p>
             {% else %}
             <div class="blog-post">No Posts.</div>
             {% endfor %}
         </div>
-        <aside class="col-md-4 blog-sidebar">
+        <aside class="col-md-3 blog-sidebar">
             <div class="p-4">
                 <h4 class="font-italic">Tags</h4>
                 <ol class="list-unstyled mb-0">
