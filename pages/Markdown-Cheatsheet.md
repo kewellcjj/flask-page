@@ -1,6 +1,6 @@
 title: Markdown Cheatsheet
 date: 2019-09-26
-tags: [markdown] 
+tags: [markdown, test] 
 
 # H1
 ## H2
@@ -23,7 +23,7 @@ Strong emphasis, aka bold, with **asterisks** or __underscores__.
 
 Combined emphasis with **asterisks and _underscores_**.
 
-Strikethrough uses two tildes. ~~Scratch this.~~
+Strikethrough uses two tildes. <s>Scratch this.</s>
 
 1. First ordered list item
 2. Another item

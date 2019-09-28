@@ -1,14 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>List of stuff</h2>
-    <ul>
-    {% for page in pages %}
-        <li>
-            <a href="{{ url_for('page', path=page.path) }}">{{ page.title }}</a>
-        </li>
-    {% else %}
-        <li>No stuff.</li>
-    {% endfor %}
-    </ul>
+<main role="main" clss="container">
+    <div class="row">
+        <div class="col-md-8 blog-main">
+            <h3 class="pb-4 mb-4 font-italic border-bottom">
+                Recent Posts
+            </h3>
+            {% for page in pages %}
+            <div class="blog-post">
+                <h2 class="blog-post-tile" href="{{ url_for('page', path=page.path) }}">{{ page.title }}</h2>
+                <p class="blog-post-meta">{{ page.date.strftime("%B %d, %Y") }}</p>
+                    <p>{{ page }}</p>
+            </div>
+            
+            {% if page.meta.tags|length %}
+            <br>
+            {% for page_tag in page.meta.tags %}
+
+            <a href="{{ url_for('tag', tag=page_tag) }}">#{{ page_tag }}</a>
+            {% endfor %}
+            {% endif %}
+            {% else %}
+            <div class="blog-post">No Posts.</div>
+            {% endfor %}
+        </div>
+        <aside class="col-md-4 blog-sidebar">
+            <div class="p-4">
+                <h4 class="font-italic">Tags</h4>
+            </div>
+            <div class="p-4">
+                    <h4 class="font-italic">Archives</h4>
+                </div>
+        </aside>
+    </div>
+</main>
 {% endblock content %}
