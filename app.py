@@ -34,12 +34,13 @@ app.config.update({
 
 @app.route('/')
 def index():
-    return render_template('index.html', pages=pages)
+    latest = sorted(pages, reverse=True, key=lambda p: p.meta['date'])
+    return render_template('index.html', pages=latest)
 
 @app.route('/<path:path>/')
 def page(path):
     page = pages.get_or_404(path)
-    return render_template('page.html', page=page)
+    return render_template('page.html', page=latest)
 
 @app.route('/tag/<string:tag>/')
 def tag(tag):
