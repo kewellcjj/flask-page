@@ -2,6 +2,7 @@ from flask import Flask, render_template, render_template_string
 from flask_flatpages import FlatPages, pygments_style_defs
 import markdown
 from bs4 import BeautifulSoup as bs
+import sys
 
 DEBUG = True
 FLATPAGES_AUTO_RELOAD = DEBUG
@@ -12,24 +13,33 @@ app.config.from_object(__name__)
 pages = FlatPages(app)
 
 # fix unnested html code
+@app.template_filter('prettify')
 def prettify(html):
     soup = bs(html, 'html.parser')
     return soup.prettify()
 
-# register custom filter in flask app
-app.jinja_env.filters['prettify']=prettify
+# register custom filter in flask app\
+# app.jinja_env.filters['prettify']=prettify
 
 def my_renderer(text):
     """Inject the markdown rendering into the jinga template"""
     rendered_body = render_template_string(text)
-    pygmented_body = markdown.markdown(rendered_body, extensions=['codehilite', 'fenced_code', 'tables', 'mdx_math'])
+    extension_configs = {
+        # 'codehilite': {
+        #     'linenums': 'True'
+        # },
+        'mdx_math': {
+            'enable_dollar_delimiter': True,
+        }
+    }
+    pygmented_body = markdown.markdown(rendered_body, extensions=['codehilite', 'fenced_code', 'tables', 'mdx_math'],
+                        extension_configs = extension_configs)
     return pygmented_body
 
 app.config.update({
     'FLATPAGES_EXTENSION': ['.md', '.markdown'],
     'FLATPAGES_MARKDOWN_EXTENSIONS': ['codehilite', 'fenced_code', 'tables', 'mdx_math'],
     'FLATPAGES_HTML_RENDERER': my_renderer,
-    'enable_dollar_delimiter': True,
 })
 
 @app.route('/')
@@ -52,4 +62,11 @@ def pygments_css():
     return pygments_style_defs('tango'), 200, {'Content-Type': 'text/css'}
 
 if __name__ == "__main__":
-    app.run()
+    if len(sys.argv) > 1:
+        try:
+            if int(sys.argv[1])>2000:
+                app.run(debug=True, port=sys.argv[1])
+        except ValueError:
+            print("Invalid port number")
+    else:
+        app.run(debug=True)
