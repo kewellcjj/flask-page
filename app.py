@@ -13,13 +13,14 @@ pages = FlatPages(app)
 def my_renderer(text):
     """Inject the markdown rendering into the jinga template"""
     rendered_body = render_template_string(text)
-    pygmented_body = markdown.markdown(rendered_body, extensions=['codehilite', 'fenced_code', 'tables'])
+    pygmented_body = markdown.markdown(rendered_body, extensions=['codehilite', 'fenced_code', 'tables', 'mdx_math'])
     return pygmented_body
 
 app.config.update({
     'FLATPAGES_EXTENSION': ['.md', '.markdown'],
-    'FLATPAGES_MARKDOWN_EXTENSIONS': ['codehilite', 'fenced_code', 'tables'],
-    'FLATPAGES_HTML_RENDERER': my_renderer
+    'FLATPAGES_MARKDOWN_EXTENSIONS': ['codehilite', 'fenced_code', 'tables', 'mdx_math'],
+    'FLATPAGES_HTML_RENDERER': my_renderer,
+    'enable_dollar_delimiter': True,
 })
 
 @app.route('/')
