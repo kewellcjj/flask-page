@@ -4,9 +4,11 @@
 <main role="main" clss="container">
     <div class="row">
         <div class="col-md-9 blog-main p-4">
-            <!-- <h3 class="pb-4 mb-4 font-italic border-bottom">
-                Recent Posts
-            </h3> -->
+            {% if list_title %}
+            <h3 class="pb-4 mb-4 font-italic border-bottom">
+                {{ list_title }}
+            </h3>
+            {% endif %}
             {% for page in pages %}
             <div class="blog-post mb-2">
                 <h2 class="blog-post-tile">{{ page.title }}</h2>
@@ -16,11 +18,20 @@
                 {% endfor %}
                 {% endif %} -->
                 <p class="blog-post-meta">{{ page.date.strftime("%B %d, %Y") }}</p>
-                <p>{{ page.html|truncate(250)|prettify|safe }}</p>
-                <p>
-                    <a href="{{ url_for('page', path=page.path) }}">Read More</a>
-                </p>
+                {% if pages|length == 1 %}
+                <div  class="markdown-body">
+                <p>{{ page.html|safe }}</p>
             </div>
+                {% else %}
+                <div  class="markdown-body">
+                <p>{{ page.html|truncate(250)|prettify|safe }}</p>
+            </div>
+                <p>
+                    <a href="{{ url_for('page', path=page.path) }}" class="text-primary">Read More</a>
+                </p>
+                {% endif %}
+            </div>
+            <hr>
             {% else %}
             <div class="blog-post">No Posts.</div>
             {% endfor %}
@@ -31,7 +42,7 @@
                 <ol class="list-unstyled mb-0">
                     {% if tags|length %}
                     {% for tag in tags %}
-                    <li><a href="{{ url_for('tag', tag=tag[0]) }}">#{{ tag[0]|capitalize }} ({{ tag[1] }})</a></li>
+                    <li><a href="{{ url_for('tag', tag=tag[0]) }}" class="text-info"><i class="fas fa-tags"></i> {{ tag[0]|capitalize }} ({{ tag[1] }})</a></li>
                     {% endfor %}
                     {% endif %}
                 </ol>
@@ -41,7 +52,7 @@
                 <ol class="list-unstyled mb-0">
                     {% if dates|length %}
                     {% for date in dates %}
-                    <li><a href="{{ url_for('archive', date=date[0]) }}">{{ date[0] }} ({{ date[1] }})</a></li>
+                    <li><a href="{{ url_for('archive', date=date[0]) }}" class="text-info">{{ date[0] }} ({{ date[1] }})</a></li>
                     {% endfor %}
                     {% endif %}
                 </ol>
