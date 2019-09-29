@@ -12,12 +12,14 @@
             {% for page in pages %}
             <div class="blog-post mb-2">
                 <h2 class="blog-post-tile">{{ page.title }}</h2>
-                <!-- {% if page.meta.tags|length %}
-                {% for page_tag in page.meta.tags %}
-                <a href="{{ url_for('tag', tag=page_tag) }}">#{{ page_tag|capitalize }}</a>
-                {% endfor %}
-                {% endif %} -->
                 <p class="blog-post-meta">{{ page.date.strftime("%B %d, %Y") }}</p>
+                {% if page.meta.tags|length %}
+                <span class="text-info">
+                <i class="fas fa-tags"></i></span>
+                {% for page_tag in page.meta.tags %}
+                <a href="{{ url_for('tag', tag=page_tag) }}" class="badge badge-info">{{ page_tag|capitalize }}</a>
+                {% endfor %}
+                {% endif %}
                 {% if pages|length == 1 %}
                 <div  class="markdown-body">
                 <p>{{ page.html|safe }}</p>
@@ -42,7 +44,7 @@
                 <ol class="list-unstyled mb-0">
                     {% if tags|length %}
                     {% for tag in tags %}
-                    <li><a href="{{ url_for('tag', tag=tag[0]) }}" class="text-info"><i class="fas fa-tags"></i> {{ tag[0]|capitalize }} ({{ tag[1] }})</a></li>
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="{{ url_for('tag', tag=tag[0]) }}" class="badge badge-info">{{ tag[0]|capitalize }}<!-- ({{ tag[1] }})--></a>
                     {% endfor %}
                     {% endif %}
                 </ol>
@@ -52,11 +54,19 @@
                 <ol class="list-unstyled mb-0">
                     {% if dates|length %}
                     {% for date in dates %}
-                    <li><a href="{{ url_for('archive', date=date[0]) }}" class="text-info">{{ date[0] }} ({{ date[1] }})</a></li>
+                    <li><a href="{{ url_for('archive', date=date[0]) }}" class="text-dark">{{ date[0] }}<!-- ({{ date[1] }})--></a></li>
                     {% endfor %}
                     {% endif %}
                 </ol>
             </div>
+            <div class="p-4">
+                    <h4 class="font-italic">Elsewhere</h4>
+                    <ol class="list-unstyled mb-0">
+                        <a href="https://github.com/kewellcjj" target="_blank"><i class="fab fa-github fa-2x p-2 text-dark" title="Github"></i></a>
+                        <a href="https://www.linkedin.com/in/jiajie-chen/" target="_blank"><i class="fab fa-linkedin fa-2x p-2 text-dark" title="Linkedin"></i></a>
+                        <a href="https://scholar.google.com/citations?user=I2AmPBMAAAAJ&hl=en" target="_blank"><i class="fab fa-google fa-2x p-2 text-dark" title="Google Scholar"></i></a>
+                    </ol>
+                </div>
         </aside>
     </div>
 </main>
