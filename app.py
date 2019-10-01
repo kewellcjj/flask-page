@@ -66,27 +66,12 @@ sorted_tags, sorted_dates = index_summary(pages)
 
 @app.route('/')
 def index():
-    # #collect all tags
-    # tags = {}
-    # for p in pages:
-    #     for tag in p.meta.get('tags', []):
-    #         if tag not in tags:
-    #             tags[tag] = 1
-    #         else:
-    #             tags[tag] += 1
-    # sorted_tags = sorted(tags.items(), reverse=True, key=lambda x: x[1])
-    # #collect publish dates
-    # dates = {}
-    # for p in pages:
-    #     mmyyyy = p.meta.get('date','').strftime("%B %Y")
-    #     if mmyyyy not in dates:
-    #         dates[mmyyyy] = 1
-    #     else:
-    #         dates[mmyyyy] += 1
-    # sorted_dates = sorted(dates.items(), reverse=True, key=lambda x: x[1])
-
     latest = sorted(pages, reverse=True, key=lambda p: p.meta['date'])
     return render_template('index.html', pages=latest, tags=sorted_tags, dates=sorted_dates, list_title="Recent Posts")
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 @app.route('/<path:path>/')
 def page(path):
