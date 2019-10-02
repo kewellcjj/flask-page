@@ -22,20 +22,26 @@ def my_renderer(text):
     """Inject the markdown rendering into the jinga template"""
     rendered_body = render_template_string(text)
     extension_configs = {
-        # 'codehilite': {
-        #     'linenums': 'True'
-        # },
+        'codehilite': {
+            # 'linenums': 'True',
+            'guess_lang': False,
+        },
         'mdx_math': {
             'enable_dollar_delimiter': True,
-        }
+        },
+        'toc': {
+            'baselevel': 2,
+            'toc_depth': "2-2",
+            # 'title': "Table of Contents",
+        },
     }
-    pygmented_body = markdown.markdown(rendered_body, extensions=['codehilite', 'fenced_code', 'tables', 'mdx_math'],
+    pygmented_body = markdown.markdown(rendered_body, extensions=['codehilite', 'fenced_code', 'tables', 'mdx_math', 'toc'],
                         extension_configs = extension_configs)
     return pygmented_body
 
 app.config.update({
     'FLATPAGES_EXTENSION': ['.md', '.markdown'],
-    'FLATPAGES_MARKDOWN_EXTENSIONS': ['codehilite', 'fenced_code', 'tables', 'mdx_math'],
+    'FLATPAGES_MARKDOWN_EXTENSIONS': ['codehilite', 'fenced_code', 'tables', 'mdx_math', 'toc'],
     'FLATPAGES_HTML_RENDERER': my_renderer,
 })
 
