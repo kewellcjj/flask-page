@@ -621,9 +621,9 @@
     word-wrap: break-all;
   }
   
-  .markdown-body li>p {
+  /* .markdown-body li>p {
     margin-top: 16px;
-  }
+  } */
   
   .markdown-body li+li {
     margin-top: .25em;

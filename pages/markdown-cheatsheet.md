@@ -2,7 +2,10 @@ title: Markdown Cheatsheet
 date: 2019-09-26
 tags: [markdown, test] 
 
+This post shows that this site is able to render markdown files almost identically to the [Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet). A few differences are noted, and we show the support of Math expressions in the end. 
+
 # Headers
+We force the the base level of header's to be 2 so that ```# H1``` will be rendered as ```<h2></h2>``` and thus has a smaller font than the article title. 
 ```
 # H1
 ## H2
@@ -35,7 +38,8 @@ Alt-H2
 ------
 
 # Emphasis
-```
+We use html strik tag, for example, ```<s></s>``` for strikethrough while ```~~``` does not work here.
+```hl_lines="7"
 Emphasis, aka italics, with *asterisks* or _underscores_.
 
 Strong emphasis, aka bold, with **asterisks** or __underscores__.
@@ -53,20 +57,22 @@ Combined emphasis with **asterisks and _underscores_**.
 Strikethrough uses two tildes. <s>Scratch this.</s>
 
 # Lists
-(In this example, leading and trailing spaces are shown with with dots: ⋅)
-```
+We need one blank line before and the other after the first unordered sub-list. We also require four spaces for the paragraphs within an list item.
+```hl_lines="4 6 7 8 10 11 12 13 14"
 1. First ordered list item
 2. Another item
-⋅⋅* Unordered sub-list. 
+
+*  Unordered sub-list. 
+
 1. Actual numbers don't matter, just that it's a number
-⋅⋅1. Ordered sub-list
-4. And another item.
+2. Ordered sub-list
+3. And another item.
 
-⋅⋅⋅You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).
+⋅⋅⋅⋅You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).
 
-⋅⋅⋅To have a line break without a paragraph, you will need to use two trailing spaces.⋅⋅
-⋅⋅⋅Note that this line is separate, but within the same paragraph.⋅⋅
-⋅⋅⋅(This is contrary to the typical GFM line break behaviour, where trailing spaces are not required.)
+⋅⋅⋅⋅To have a line break without a paragraph, you will need to use two trailing spaces.⋅⋅
+⋅⋅⋅⋅Note that this line is separate, but within the same paragraph.⋅⋅
+⋅⋅⋅⋅(This is contrary to the typical GFM line break behaviour, where trailing spaces are not required.)
 
 * Unordered list can use asterisks
 - Or minuses
@@ -74,23 +80,24 @@ Strikethrough uses two tildes. <s>Scratch this.</s>
 ```
 1. First ordered list item
 2. Another item
-  * Unordered sub-list. 
+
+*  Unordered sub-list. 
+
 1. Actual numbers don't matter, just that it's a number
-  1. Ordered sub-list
-4. And another item.
+2. Ordered sub-list
+3. And another item.
 
-   You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).
+    You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).
 
-   To have a line break without a paragraph, you will need to use two trailing spaces.  
-   Note that this line is separate, but within the same paragraph.  
-   (This is contrary to the typical GFM line break behaviour, where trailing spaces are not required.)
+    To have a line break without a paragraph, you will need to use two trailing spaces.  
+    Note that this line is separate, but within the same paragraph.  
+    (This is contrary to the typical GFM line break behaviour, where trailing spaces are not required.)
 
 * Unordered list can use asterisks
 - Or minuses
 + Or pluses
 
 # Links
-There are two ways to create links.
 ```
 [I'm an inline-style link](https://www.google.com)
 
@@ -135,9 +142,21 @@ Some text to show that the reference links can follow later.
 [arbitrary case-insensitive reference text]: https://www.mozilla.org
 [1]: http://slashdot.org
 [link text itself]: http://www.reddit.com
-Here's our logo (hover to see the title text):
 
 # Images
+```
+Here's our logo (hover to see the title text):
+
+Inline-style: 
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+
+Reference-style: 
+![alt text][logo]
+
+[logo]: https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 2"
+```
+Here's our logo (hover to see the title text):
+
 Inline-style: 
 ![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
 
@@ -147,28 +166,27 @@ Reference-style:
 [logo]: https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 2"
 
 # Code and Syntax Highlighting
-Code blocks are part of the Markdown spec, but syntax highlighting isn't. However, many renderers -- like Github's and Markdown Here -- support syntax highlighting. Which languages are supported and how those language names should be written will vary from renderer to renderer. Markdown Here supports highlighting for dozens of languages (and not-really-languages, like diffs and HTTP headers); to see the complete list, and how to write the language names, see the highlight.js demo page.
 ```
 Inline `code` has `back-ticks around` it.
 ```
 Inline `code` has `back-ticks around` it.
-Blocks of code are either fenced by lines with three back-ticks ` ``` `, or are indented with four spaces. I recommend only using the fenced code blocks -- they're easier and only they support syntax highlighting.
 
-    ```javascript
-    var s = "JavaScript syntax highlighting";
-    alert(s);
-    ```
+~~~
+```javascript
+var s = "JavaScript syntax highlighting";
+alert(s);
+```
 
-    ```python
-    s = "Python syntax highlighting"
-    print s
-    ```
+```python
+s = "Python syntax highlighting"
+print s
+```
 
-    ```
-    No language indicated, so no syntax highlighting. 
-    But let's throw in a <b>tag</b>.
-    ```
-
+```
+No language indicated, so no syntax highlighting. 
+But let's throw in a <b>tag</b>.
+```
+~~~
 ```javascript
 var s = "JavaScript syntax highlighting";
 alert(s);
@@ -185,7 +203,6 @@ But let's throw in a <b>tag</b>.
 ```
 
 # Tables
-Tables aren't part of the core Markdown spec, but they are part of GFM and Markdown Here supports them. They are an easy way of adding tables to your email -- a task that would otherwise require copy-pasting from another application.
 ```
 Colons can be used to align columns.
 
@@ -286,15 +303,13 @@ ___
 Underscores
 
 # Line Breaks
-My basic recommendation for learning how line breaks work is to experiment and discover -- hit <Enter> once (i.e., insert one newline), then hit it twice (i.e., insert two newlines), see what happens. You'll soon learn to get what you want. "Markdown Toggle" is your friend.
-
-Here are some things to try out:
-```
+Two spaces needed at the end of line 6 for a line break.
+```hl_lines="5"
 Here's a line for us to start with.
 
 This line is separated from the one above by two newlines, so it will be a *separate paragraph*.
 
-This line is also a separate paragraph, but...
+This line is also a separate paragraph, but...⋅⋅
 This line is only separated by a single newline, so it's a separate line in the *same paragraph*.
 ```
 Here's a line for us to start with.
@@ -305,13 +320,15 @@ This line is also a separate paragraph, but...
 This line is only separated by a single newline, so it's a separate line in the *same paragraph*.
 
 # YouTube Videos
-They can't be added directly but you can add an image with a link to the video like this:
 ```
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=YOUTUBE_VIDEO_ID_HERE
 " target="_blank"><img src="http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" 
 alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
 ```
-Or, in pure Markdown, but losing the image sizing and border:
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=YOUTUBE_VIDEO_ID_HERE
+" target="_blank"><img src="http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" 
+alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
 ```
 [![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
 ```
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)

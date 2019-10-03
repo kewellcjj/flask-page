@@ -35,13 +35,13 @@ def my_renderer(text):
             # 'title': "Table of Contents",
         },
     }
-    pygmented_body = markdown.markdown(rendered_body, extensions=['codehilite', 'fenced_code', 'tables', 'mdx_math', 'toc'],
+    pygmented_body = markdown.markdown(rendered_body, extensions=['codehilite', 'fenced_code', 'tables', 'mdx_math', 'toc', 'sane_lists'],
                         extension_configs = extension_configs)
     return pygmented_body
 
 app.config.update({
     'FLATPAGES_EXTENSION': ['.md', '.markdown'],
-    'FLATPAGES_MARKDOWN_EXTENSIONS': ['codehilite', 'fenced_code', 'tables', 'mdx_math', 'toc'],
+    'FLATPAGES_MARKDOWN_EXTENSIONS': ['codehilite', 'fenced_code', 'tables', 'mdx_math', 'toc', 'sane_lists'],
     'FLATPAGES_HTML_RENDERER': my_renderer,
 })
 

@@ -12,7 +12,7 @@ interesting integral:
 \end{equation}
 ```
 
-In equation $\eqref{eq:sample}$, we find the value of an
+In equation (1), we find the value of an
 interesting integral:
 
 \begin{equation}
