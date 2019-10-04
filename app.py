@@ -7,7 +7,6 @@ import sys
 
 DEBUG = True
 FLATPAGES_AUTO_RELOAD = DEBUG
-FLATPAGES_EXTENSION = '.md'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -75,7 +74,7 @@ def index():
     sorted_tags, sorted_dates = index_summary(pages)
     return render_template('index.html', pages=latest, tags=sorted_tags, dates=sorted_dates, list_title="Recent Posts")
 
-@app.route('/about')
+@app.route('/about/')
 def about():
     return render_template('about.html')
 
