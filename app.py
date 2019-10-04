@@ -35,13 +35,13 @@ def my_renderer(text):
             # 'title': "Table of Contents",
         },
     }
-    pygmented_body = markdown.markdown(rendered_body, extensions=['codehilite', 'fenced_code', 'tables', 'mdx_math', 'toc', 'sane_lists'],
+    pygmented_body = markdown.markdown(rendered_body, extensions=['codehilite', 'extra', 'mdx_math', 'toc', 'sane_lists'],
                         extension_configs = extension_configs)
     return pygmented_body
 
 app.config.update({
     'FLATPAGES_EXTENSION': ['.md', '.markdown'],
-    'FLATPAGES_MARKDOWN_EXTENSIONS': ['codehilite', 'fenced_code', 'tables', 'mdx_math', 'toc', 'sane_lists'],
+    'FLATPAGES_MARKDOWN_EXTENSIONS': ['codehilite', 'extra', 'mdx_math', 'toc', 'sane_lists'],
     'FLATPAGES_HTML_RENDERER': my_renderer,
 })
 
@@ -67,12 +67,10 @@ def index_summary(pages):
 
     return sorted_tags, sorted_dates
 
-
-sorted_tags, sorted_dates = index_summary(pages)
-
 @app.route('/')
 def index():
     latest = sorted(pages, reverse=True, key=lambda p: p.meta['date'])
+    sorted_tags, sorted_dates = index_summary(pages)
     return render_template('index.html', pages=latest, tags=sorted_tags, dates=sorted_dates, list_title="Recent Posts")
 
 @app.route('/about')
@@ -82,19 +80,21 @@ def about():
 @app.route('/<path:path>/')
 def page(path):
     page = pages.get_or_404(path)
-    # return render_template('page.html', page=page)
+    sorted_tags, sorted_dates = index_summary(pages)
     return render_template('index.html', pages=[page], tags=sorted_tags, dates=sorted_dates, list_title="")
 
 @app.route('/tag/<string:tag>/')
 def tag(tag):
     tagged = [p for p in pages if tag in p.meta.get('tags', [])]
     tagged = sorted(tagged, reverse=True, key=lambda p: p.meta['date'])
+    sorted_tags, sorted_dates = index_summary(pages)
     return render_template('index.html', pages=tagged, tags=sorted_tags, dates=sorted_dates, list_title="Recent Posts Tagged "+tag.title())
 
 @app.route('/archive/<string:date>/')
 def archive(date):
     archive = [p for p in pages if date == p.meta.get('date', []).strftime("%B %Y")]
     archive = sorted(archive, reverse=True, key=lambda p: p.meta['date'])
+    sorted_tags, sorted_dates = index_summary(pages)
     return render_template('index.html', pages=archive, tags=sorted_tags, dates=sorted_dates, list_title="Posts in "+date.title())
 
 @app.route('/pygments.css')

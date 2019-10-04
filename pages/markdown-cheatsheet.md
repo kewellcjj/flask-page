@@ -1,11 +1,12 @@
 title: Markdown Cheatsheet
 date: 2019-09-26
-tags: [markdown, test] 
+tags: [markdown, cheatsheet] 
 
-This post shows that this site is able to render markdown files almost identically to the [Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet). A few differences are noted, and we show the support of Math expressions in the end. 
+This post shows that this site is able to render markdown files almost identically to the [Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet). A few differences are noted, and we show the support of Math expressions in our following post. 
 
 # Headers
-We force the the base level of header's to be 2 so that ```# H1``` will be rendered as ```<h2></h2>``` and thus has a smaller font than the article title. 
+We force the the base level of header's to be 2 so that ```# H1``` will be rendered as ```<h2></h2>``` and thus has a smaller font than the article title. This bootstrap alert message is supported by ```markdown.extension.attr_list```.
+{: .alert .alert-info role='alert' }
 ```
 # H1
 ## H2
@@ -38,7 +39,8 @@ Alt-H2
 ------
 
 # Emphasis
-We use html strik tag, for example, ```<s></s>``` for strikethrough while ```~~``` does not work here.
+We use html strik tag, for example, ```<s></s>``` for strikethrough while ```~~``` does not work here. Code highlight is suppoted by ```markdown.extensions.codehilite``` and ```markdown.extensions.fenced_code```.
+{: .alert .alert-info role='alert' }
 ```hl_lines="7"
 Emphasis, aka italics, with *asterisks* or _underscores_.
 
@@ -57,7 +59,8 @@ Combined emphasis with **asterisks and _underscores_**.
 Strikethrough uses two tildes. <s>Scratch this.</s>
 
 # Lists
-We need one blank line before and the other after the first unordered sub-list. We also require four spaces for the paragraphs within an list item.
+We need one blank line before and the other after the first unordered sub-list. We also require four spaces for the paragraphs within an list item. The numbers of the ordered list are required as we use ```markdown.extensions.sane_lists```. (In this example, leading and trailing spaces are shown with with dots: ⋅)
+{: .alert .alert-info role='alert' }
 ```hl_lines="4 6 7 8 10 11 12 13 14"
 1. First ordered list item
 2. Another item
@@ -303,8 +306,7 @@ ___
 Underscores
 
 # Line Breaks
-Two spaces needed at the end of line 6 for a line break.
-```hl_lines="5"
+```
 Here's a line for us to start with.
 
 This line is separated from the one above by two newlines, so it will be a *separate paragraph*.
@@ -316,19 +318,21 @@ Here's a line for us to start with.
 
 This line is separated from the one above by two newlines, so it will be a *separate paragraph*.
 
-This line is also a separate paragraph, but...
+This line is also a separate paragraph, but...  
 This line is only separated by a single newline, so it's a separate line in the *same paragraph*.
 
 # YouTube Videos
+Warning: head phone on before you click the video...
+{: .alert .alert-danger role='alert' }
 ```
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=YOUTUBE_VIDEO_ID_HERE
-" target="_blank"><img src="http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" 
+<a href="https://www.youtube.com/watch?v=KolfEhV-KiA
+" target="_blank"><img src="http://img.youtube.com/vi/KolfEhV-KiA/0.jpg" 
 alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
 ```
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=YOUTUBE_VIDEO_ID_HERE
-" target="_blank"><img src="http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" 
+<a href="https://www.youtube.com/watch?v=KolfEhV-KiA
+" target="_blank"><img src="http://img.youtube.com/vi/KolfEhV-KiA/0.jpg" 
 alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
 ```
-[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/KolfEhV-KiA/0.jpg)](https://www.youtube.com/watch?v=KolfEhV-KiA)
 ```
-[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/KolfEhV-KiA/0.jpg)](https://www.youtube.com/watch?v=KolfEhV-KiA)

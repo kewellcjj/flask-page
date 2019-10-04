@@ -1,7 +1,9 @@
 title: Markdown Math Support
 date: 2019-09-27
-tags: [markdown, math] 
+tags: [markdown] 
 
+Below is a quick illustration of math support in markdown using [mdx_math](https://github.com/mitya57/python-markdown-math) extension. However, the equation link will be broken if we truncated the equation off the front page. 
+{: .alert .alert-warning role="alert"}
 ```
 In equation $\eqref{eq:sample}$, we find the value of an
 interesting integral:
@@ -12,7 +14,7 @@ interesting integral:
 \end{equation}
 ```
 
-In equation (1), we find the value of an
+In equation $\eqref{eq:sample}$, we find the value of an
 interesting integral:
 
 \begin{equation}
