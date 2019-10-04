@@ -1,5 +1,6 @@
 from flask import Flask, render_template, render_template_string
 from flask_flatpages import FlatPages, pygments_style_defs
+from flask_frozen import Freezer
 import markdown
 from bs4 import BeautifulSoup as bs
 import sys
@@ -11,6 +12,7 @@ FLATPAGES_EXTENSION = '.md'
 app = Flask(__name__)
 app.config.from_object(__name__)
 pages = FlatPages(app)
+freezer = Freezer(app) 
 
 # fix unnested html code, and register to the jinja filter
 @app.template_filter('prettify')
@@ -103,10 +105,13 @@ def pygments_css():
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        try:
-            if int(sys.argv[1])>2000:
-                app.run(port=sys.argv[1])
-        except ValueError:
-            print("Invalid port number")
+        if sys.argv[1] == "build":
+            freezer.freeze()
+        else:
+            try:
+                if int(sys.argv[1])>2000:
+                    app.run(port=sys.argv[1])
+            except ValueError:
+                print("Invalid port number")
     else:
         app.run()
