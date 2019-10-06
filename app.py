@@ -44,6 +44,7 @@ app.config.update({
     'FLATPAGES_EXTENSION': ['.md', '.markdown'],
     'FLATPAGES_MARKDOWN_EXTENSIONS': ['codehilite', 'extra', 'mdx_math', 'toc', 'sane_lists'],
     'FLATPAGES_HTML_RENDERER': my_renderer,
+    'FREEZER_DESTINATION_IGNORE': ['.git*'],
 })
 
 def index_summary(pages):
