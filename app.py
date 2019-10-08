@@ -24,6 +24,8 @@ app.config.update({
 @app.route('/')
 def index():
     latest = sorted(pages, reverse=True, key=lambda p: p.meta['date'])
+    for p in latest:
+        p.meta['excerpt'] = my_renderer(p.meta['excerpt'])
     sorted_tags, sorted_dates = index_summary(pages)
     return render_template('index.html', pages=latest, tags=sorted_tags, dates=sorted_dates, list_title="Recent Posts")
 

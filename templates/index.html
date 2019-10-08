@@ -20,17 +20,17 @@
                 <a href="{{ url_for('tag', tag=page_tag) }}" class="badge badge-info">{{ page_tag|capitalize }}</a>
                 {% endfor %}
                 {% endif %}
-                {% if pages|length == 1 %}
+                {% if list_title %}
+                <div  class="markdown-body">
+                <p>{{ page.excerpt|safe }}</p>
+            </div>
+            <p>
+                <a href="{{ url_for('page', path=page.path) }}" class="text-primary">Read More</a>
+            </p>
+                {% else %}
                 <div  class="markdown-body">
                 <p>{{ page.html|safe }}</p>
             </div>
-                {% else %}
-                <div  class="markdown-body">
-                <p>{{ page.html|truncate(900)|prettify|safe }}</p>
-            </div>
-                <p>
-                    <a href="{{ url_for('page', path=page.path) }}" class="text-primary">Read More</a>
-                </p>
                 {% endif %}
             </div>
             <hr>
