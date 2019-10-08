@@ -1,6 +1,8 @@
 title: Hello World
 date: 2019-09-26
 tags: [flask, python, github] 
+excerpt: A quick summary of tools used to build this website.
+
 
 This is a static website hosted on GitHub. The page is based on following tools:
 
