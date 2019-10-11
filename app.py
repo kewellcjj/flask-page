@@ -2,7 +2,6 @@ from flask import Flask, render_template, render_template_string
 from flask_flatpages import FlatPages, pygments_style_defs
 from flask_frozen import Freezer
 import markdown
-from bs4 import BeautifulSoup as bs
 import sys
 from utils import my_renderer, index_summary
 
