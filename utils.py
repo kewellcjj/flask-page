@@ -29,10 +29,6 @@ def my_renderer(text):
                         extension_configs = extension_configs)
     return pygmented_body
 
-def my_renderer1(text):
-    prerendered_body = render_template_string(text)
-    return pygmented_markdown(prerendered_body)
-
 def index_summary(pages):
     #collect all tags
     tags = {}
