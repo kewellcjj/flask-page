@@ -37,18 +37,18 @@ def index():
 def about():
     return render_template('about.html')
 
-@app.route('/<path:path>/')
+@app.route('/blog/<path:path>/')
 def page(path):
     page = pages.get_or_404(path)
     return render_template('index.html', pages=[page], tags=sorted_tags, dates=sorted_dates, list_title="")
 
-@app.route('/tag/<string:tag>/')
+@app.route('/blog/tag/<string:tag>/')
 def tag(tag):
     tagged = [p for p in pages if tag in p.meta.get('tags', [])]
     tagged = sorted(tagged, reverse=True, key=lambda p: p.meta['date'])
     return render_template('index.html', pages=tagged, tags=sorted_tags, dates=sorted_dates, list_title="Recent Posts Tagged "+tag.title())
 
-@app.route('/archive/<string:date>/')
+@app.route('/blog/archive/<string:date>/')
 def archive(date):
     archive = [p for p in pages if date == p.meta.get('date', []).strftime("%B %Y")]
     archive = sorted(archive, reverse=True, key=lambda p: p.meta['date'])
