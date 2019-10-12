@@ -11,7 +11,7 @@
             {% endif %}
             {% for page in pages %}
             <div class="blog-post mb-2">
-                <h2 class="blog-post-tile">{{ page.title }}</h2>
+                <h2 class="blog-post-tile"><a href="{{ url_for('page', path=page.path) }}" style='color: #000;'>{{ page.title }}</a></h2>
                 <p class="blog-post-meta">{{ page.date.strftime("%B %d, %Y") }}</p>
                 {% if page.meta.tags|length %}
                 <span class="text-info">
@@ -24,9 +24,9 @@
                 <div  class="markdown-body">
                 <p>{{ page.excerpt|safe }}</p>
             </div>
-            <p>
+            <!-- <p>
                 <a href="{{ url_for('page', path=page.path) }}" class="text-primary">Read More</a>
-            </p>
+            </p> -->
                 {% else %}
                 <div  class="markdown-body">
                 <p>{{ page.html|safe }}</p>
