@@ -54,7 +54,7 @@ def archive(date):
     archive = sorted(archive, reverse=True, key=lambda p: p.meta['date'])
     return render_template('index.html', pages=archive, tags=sorted_tags, dates=sorted_dates, list_title="Posts in "+date.title())
 
-@app.route('/pygments.css')
+@app.route('/static/css/pygments.css')
 def pygments_css():
     return pygments_style_defs('default'), 200, {'Content-Type': 'text/css'}
 
