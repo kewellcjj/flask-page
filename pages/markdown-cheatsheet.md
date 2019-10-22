@@ -1,7 +1,9 @@
+---
 title: Markdown Cheatsheet
 date: 2019-09-26
 tags: [markdown, cheatsheet] 
 excerpt: This post shows that this site is able to render markdown files almost identically to the [Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet). A few differences are noted, and we show the support of Math expressions in our following post. 
+---
 
 # Headers
 We force the the base level of header's to be 2 so that ```# H1``` will be rendered as ```<h2></h2>``` and thus has a smaller font than the article title. This bootstrap alert message is supported by ```markdown.extension.attr_list```.

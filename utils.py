@@ -1,5 +1,8 @@
 from flask import render_template_string
+from flask_flatpages import FlatPages, Page
 import markdown
+from werkzeug.utils import import_string
+from itertools import takewhile
 # from bs4 import BeautifulSoup as bs
 
 # fix unnested html code, and register to the jinja filter
@@ -7,6 +10,36 @@ import markdown
 # def prettify(html):
 #     soup = bs(html, 'html.parser')
 #     return soup.prettify()
+
+class FlatPagesNew(FlatPages):
+    def _parse(self, content, path):
+        """Parse a flatpage file, i.e. read and parse its meta data and body.
+        :return: initialized :class:`Page` instance.
+        """
+
+        lines = content.split('\n')
+        assert lines[0] == '---' and lines.count('---') >= 2, "Use '---' to indicate the start and end of the page meta"
+
+        lines = iter(lines[1:])
+        # Read lines until an empty line is encountered.
+        meta = '\n'.join(takewhile(lambda s: s != "---", lines))
+        # The rest is the content. `lines` is an iterator so it continues
+        # where `itertools.takewhile` left it.
+        content = '\n'.join(lines)
+
+        # Now we ready to get HTML renderer function
+        html_renderer = self.config('html_renderer')
+
+        # If function is not callable yet, import it
+        if not callable(html_renderer):
+            html_renderer = import_string(html_renderer)
+
+        # Make able to pass custom arguments to renderer function
+        html_renderer = self._smart_html_renderer(html_renderer)
+
+        # Initialize and return Page instance
+        return Page(path, meta, content, html_renderer)
+
 
 def my_renderer(text):
     """Inject the markdown rendering into the jinga template"""

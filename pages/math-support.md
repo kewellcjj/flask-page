@@ -1,7 +1,9 @@
+---
 title: Markdown Math Support
 date: 2019-09-27
 tags: [markdown] 
 excerpt: A quick illustration of math support in markdown using [mdx_math](https://github.com/mitya57/python-markdown-math) extension.
+---
 
 ```
 In equation $\eqref{eq:sample}$, we find the value of an

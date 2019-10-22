@@ -1,16 +1,16 @@
 from flask import Flask, render_template, render_template_string
-from flask_flatpages import FlatPages, pygments_style_defs
+from flask_flatpages import pygments_style_defs
 from flask_frozen import Freezer
 import markdown
 import sys
-from utils import my_renderer, index_summary
+from utils import my_renderer, index_summary, FlatPagesNew
 
 DEBUG = True
 FLATPAGES_AUTO_RELOAD = DEBUG
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-pages = FlatPages(app)
+pages = FlatPagesNew(app)
 freezer = Freezer(app) 
 
 app.config.update({
