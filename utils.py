@@ -3,6 +3,7 @@ from flask_flatpages import FlatPages, Page
 import markdown
 from werkzeug.utils import import_string
 from itertools import takewhile
+
 # from bs4 import BeautifulSoup as bs
 
 # fix unnested html code, and register to the jinja filter
@@ -40,7 +41,6 @@ class FlatPagesNew(FlatPages):
         # Initialize and return Page instance
         return Page(path, meta, content, html_renderer)
 
-
 def my_renderer(text):
     """Inject the markdown rendering into the jinga template"""
     rendered_body = render_template_string(text)
@@ -62,24 +62,30 @@ def my_renderer(text):
                         extension_configs = extension_configs)
     return pygmented_body
 
-def index_summary(pages):
-    #collect all tags
+def index_summary(pages):  
     tags = {}
+    dates = {}
+
     for p in pages:
+
+        # render excerpt as markdown
+        p.meta['excerpt'] = markdown.markdown(p.meta.get('excerpt', ''))
+
+        #collect all tags
         for tag in p.meta.get('tags', []):
             if tag not in tags:
                 tags[tag] = 1
             else:
                 tags[tag] += 1
-    sorted_tags = sorted(tags.items(), reverse=True, key=lambda x: x[1])
-    #collect publish dates
-    dates = {}
-    for p in pages:
+
+        #collect publish dates
         mmyyyy = p.meta.get('date','').strftime("%B %Y")
         if mmyyyy not in dates:
             dates[mmyyyy] = 1
         else:
             dates[mmyyyy] += 1
-    sorted_dates = sorted(dates.items(), reverse=True, key=lambda x: x[1])
+
+    sorted_tags = sorted(tags.items(), reverse = True, key = lambda x: x[1])
+    sorted_dates = sorted(dates.items(), reverse = True, key = lambda x: x[1])
 
     return sorted_tags, sorted_dates

@@ -1,7 +1,8 @@
+import sys
+
 from flask import Flask
 from flask_frozen import Freezer
-import markdown
-import sys
+
 from utils import my_renderer, index_summary, FlatPagesNew
 
 DEBUG = True
@@ -19,10 +20,6 @@ app.config.update({
     'FREEZER_DESTINATION_IGNORE': ['.git*'],
     'FREEZER_DESTINATION': 'kewellcjj.github.io',
 })
-
-# render excerpt as markdown
-for p in pages:
-    p.meta['excerpt'] = markdown.markdown(p.meta.get('excerpt', ''))
 
 # collect all tags and dates
 sorted_tags, sorted_dates = index_summary(pages)
