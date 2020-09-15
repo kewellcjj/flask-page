@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+{% block title %}
+{% if pages|length == 1 %}
+<title>{{ pages[0].title }}</title>
+{% endif %}
+{% endblock title %}
+
 {% block content %}
 <main role="main" clss="container">
     <div class="row">
