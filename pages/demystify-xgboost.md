@@ -9,18 +9,20 @@ XGBoost (eXtreme Gradient Boosting) is a machine learning tool that achieves hig
 
 I was first introduced to XGBoost by one of my good friend back in 2017, same time as I start to work on some Kaggle competitions. XGBoost quickly became my go-to approach as often times I could achieve reasonable performance without much hyper parameter tuning. In fact, XGBoost is the winningest method in Kaggle and KDDCup competitions during 2015, outperforming second most popular method neural nets [[1]](#1).
 
-Earlier this year, I had a chance to write decision trees and random forests from near scratch during my first semester of the Georgia Tech's OMSCS program. It was amazing that the math behind tree-based methods is so neat and "simple", yet the performance could be very good. I was able to go for an extra mile, managing to build a simple implementation of XGBoost. To do so, I had to study the original paper of XGBoost in depth (kinda, I probably only touched 30% of details). I feel it is a good time to revisit what I have done and go over what I have learned during the process.
+Earlier this year, I had a chance to write decision trees and random forests from near scratch. It was amazing that the math behind tree-based methods is so neat and "simple", yet the performance could be very good. I was able to go for an extra mile, managing to build a simple implementation of XGBoost. To do so, I had to study the original paper of XGBoost in depth (kinda, I probably only touched 30% of details). I feel it is a good time to revisit what I have done and go over what I have learned during the process.
 
 Note that various tree boosting methods exist way before the invention of XGBoost. The major contribution of XGBoost is to propose an efficient calculation, parallel tree learning algorithm and system optimizations, which combined together, resulting in a scalable end-to-end tree boosting *system*. The making of XGBoost not only requires understanding in decision tress, boosting and regularization, but also demands knowledge in computer science, particularly high performance computing.
 
 ## Part 1: Decision trees and tree boosting
 
-Let's begin with a single decision tree.
+We will follow the notation from the paper. Consider a data set with $n$ examples and $m$ features $\mathcal{D} = \{({\bf x}_i, y_i)\} (|\mathcal{D}|=n, {\bf x}_i \in \mathbb{R}^m, y_i \in \mathbb{R})$. Let $\mathcal{F} = \{f({\bf x}=\mathcal{w}_{q({\bf x})})\}(q: \mathbb{R}^m \rightarrow T, \mathcal{w} \in \mathbb{R}^T)$ denote the space of regression trees, where $T$ is the number of leaves in the tree, $q$ represents a set of all possible structures of the tree with $T$ leaves and $\mathcal{w}$ is the leaf weight given the observation ${\bf x}$ and a tree structure $q$. A key step of any decision tree algorithms is to determine the best structure $q$ by continuously splitting the leaves (binary partition) according to certain criterion, such as sum of squared errors for regression trees, gini index or cross-entropy for classification trees. Finding the best split is also the key algorithm for XGBoost. In fact, all algorithms listed in the paper are related to split finding.
 
+Now we can represent a tree ensemble model as a sum of $K$ additive tree functions: 
 \begin{equation}
-  \hat y_i = \phi(x_i) = \sum_{k=1}^K f_k(x_i), f_k \in \mathcal{F}
+  \hat y_i = \phi({\bf x}_i) = \sum_{k=1}^K f_k({\bf x}_i), f_k \in \mathcal{F},
   \label{eq:additive}
 \end{equation}
+where each $f_k$ corresponds to an independent tree structure $q$ and leaf weight $\mathcal{w}$.
 
 ## Part 2: An example with logistic regression for binary classification
 
