@@ -13,7 +13,7 @@ Earlier this year, I had a chance to write decision trees and random forests fro
 
 Note that various tree boosting methods exist way before the invention of XGBoost. The major contribution of XGBoost is to propose an efficient calculation, parallel tree learning algorithm and system optimizations, which combined together, resulting in a scalable end-to-end tree boosting *system*. The making of XGBoost not only requires understanding in decision tress, boosting and regularization, but also demands knowledge in computer science, particularly high performance computing.
 
-## Part 1: Decision trees and gradient tree boosting
+## Decision trees and gradient tree boosting
 
 We will follow the notation from the paper. Consider a data set with $n$ examples and $m$ features $\mathcal{D} = \{({\bf x}_i, y_i)\} (|\mathcal{D}|=n, {\bf x}_i \in \mathbb{R}^m, y_i \in \mathbb{R})$. Let $\mathcal{F} = \{f({\bf x})=\mathcal{w}_{q({\bf x})}\}(q: \mathbb{R}^m \rightarrow T, \mathcal{w} \in \mathbb{R}^T)$ denote the space of regression trees, where $T$ is the number of leaves in the tree, $q$ represents a possible structures of the tree that maps ${\bf x}$ to the corresponding leaf index, $\mathcal{w}$ is the leaf weight given the observation ${\bf x}$ and a tree structure $q$. A key step of any decision tree algorithms is to determine the best structure $q$ by continuously splitting the leaves (binary partition) according to certain criterion, such as sum of squared errors for regression trees, gini index or cross-entropy for classification trees. Finding the best split is also the key algorithm for XGBoost. In fact, all algorithms listed in the paper are related to split finding. The resulting split points will partition the input space into disjoint regions $R_j=\{  {\bf x} | q({\bf x}) = j\}$ as represented by leaf $j$. A constant $\mathcal{w}_j$ is assigned to leaf $j$, that is $${\bf x} \in R_j \Rightarrow f({\bf x}) = \mathcal{w}_j.$$
 Thus $f({\bf x})$ can also be expressed as $f({\bf x}) = \sum_{j=1}^T \mathcal{w}_j I(q({\bf x}) = j)$ which is equivalent to $f({\bf x})=\mathcal{w}_{q({\bf x})}$.
@@ -30,12 +30,43 @@ where each $f_k$ corresponds to an independent tree structure $q$ and leaf weigh
 \end{equation}
 where $\Omega(f) = \gamma T + \frac{1}{2} \lambda ||\mathcal{w}||^2$ is a regularization term to penalize complex models with exceedingly large number of leaves and fluctuant weights to avoid over-fitting.
 
-## Part 2: An example with logistic regression for binary classification
+The boosting tree model can be trained in a forward stagewise manner [[2]](#2). Let $\hat y_i^{(t)}$ denote the prediction of instance ${\bf x}_i$ at the $t$-th iteration, one need to solve $f_t$ to minimize the following:
+\begin{equation}
+\mathcal{L}^{(t)} = \sum_{i=1}^n l(y_i, \hat y_i^{(t-1)} + f_t({\bf x}_i)) + \Omega(f_t).
+\label{eq:stagewise}
+\end{equation}
+It is quit straightforward to calculate the $\mathcal{w}_j$ given the regions $R_j$. On the contrary, finding the best $R_j$ which minimize $\eqref{eq:stagewise}$ could be a very difficult task for general loss functions. To find an approximate yet reasonably good solution, we first need to find a more convenient ("easy") criterion. Here is where numerical optimization via gradient boosting comes into play. A second-order approximation of loss function was used to show that the AdaBoost algorithm is equivalent to a forward stagewise additive modeling procedure with exponential loss [[3]](#3). The XGBoost paper borrowed this idea to approximate the objective $\eqref{eq:stagewise}$ by
+\begin{equation}
+\tilde{\mathcal{L}}^{(t)} \simeq \sum_{i=1}^n [g_i f_t({\bf x}_i) + \frac{1}{2} h_i f_t^2({\bf x}_i)] + \Omega(f_t),
+\label{eq:stagewise1}
+\end{equation}
+where $g_i=\partial_{\hat y_i^{(t-1)}} l(y_i, \hat y_i^{(t-1)})$ and $h_i=\partial_{\hat y_i^{(t-1)}}^2 l(y_i, \hat y_i^{(t-1)})$ are first and second order gradient, and the constant term $l(y_i, \hat y_i^{(t-1)})$ is omitted.
 
-## Part 3: Parallel algorithms and system design
+Given $R_j$ or equivalently $q$, the paper shows the optimal weight $\mathcal{w}_j^*$ can be expressed as
+\begin{equation}
+\mathcal{w}_j^* = -\frac{\sum_{i \in R_j} g_j}{\sum_{i \in R_j} h_j + \lambda},
+\label{eq:w}
+\end{equation}
+and the corresponding optimal value is
+\begin{equation}
+\tilde{\mathcal{L}}^{(t)} (q) = -\frac{1}{2}\sum_{j=1}^T \frac{(\sum_{i \in R_j} g_j)^2}{\sum_{i \in R_j} h_j + \lambda} + \gamma T.
+\label{eq:obj}
+\end{equation}
+
+## An example with logistic regression for binary classification
+
+## Parallel algorithms and system design
 
 
 
 ## References
 <a id="1">[1]</a> 
 Tianqi Chen and Carlos Guestrin. XGBoost: A Scalable Tree Boosting System. In *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, pages 785–794. ACM, 2016.
+
+<a id="2">[2]</a> 
+Hastie, T., Tibshirani, R., & Friedman, J. H. (2009). The elements of statistical learning: data mining, inference, and prediction. 2nd ed. New York: Springer.
+
+<a id="3">[3]</a> 
+J. Friedman, T. Hastie, and R. Tibshirani. Additive logistic
+regression: a statistical view of boosting. *Annals of
+Statistics*, pages 337–407, 2000.
