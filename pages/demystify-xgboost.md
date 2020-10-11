@@ -13,7 +13,7 @@ Earlier this year, I had a chance to write decision trees and random forests fro
 
 Note that various tree boosting methods exist way before the invention of XGBoost. The major contribution of XGBoost is to propose an efficient calculation, parallel tree learning algorithm and system optimizations, which combined together, resulting in a scalable end-to-end tree boosting *system*. The making of XGBoost not only requires understanding in decision tress, boosting and regularization, but also demands knowledge in computer science, particularly high performance computing.
 
-## Decision trees and gradient tree boosting
+# Decision trees and gradient tree boosting
 
 We will follow the notation from the paper. Consider a data set with $n$ examples and $m$ features $\mathcal{D} = \{({\bf x}_i, y_i)\} (|\mathcal{D}|=n, {\bf x}_i \in \mathbb{R}^m, y_i \in \mathbb{R})$. Let $\mathcal{F} = \{f({\bf x})=\mathcal{w}_{q({\bf x})}\}(q: \mathbb{R}^m \rightarrow T, \mathcal{w} \in \mathbb{R}^T)$ denote the space of regression trees, where $T$ is the number of leaves in the tree, $q$ represents a possible structures of the tree that maps ${\bf x}$ to the corresponding leaf index, $\mathcal{w}$ is the leaf weight given the observation ${\bf x}$ and a tree structure $q$. A key step of any decision tree algorithms is to determine the best structure $q$ by continuously splitting the leaves (binary partition) according to certain criterion, such as sum of squared errors for regression trees, gini index or cross-entropy for classification trees. Finding the best split is also the key algorithm for XGBoost. In fact, all algorithms listed in the paper are related to split finding. The resulting split points will partition the input space into disjoint regions $R_j=\{  {\bf x} | q({\bf x}) = j\}$ as represented by leaf $j$. A constant $\mathcal{w}_j$ is assigned to leaf $j$, that is $${\bf x} \in R_j \Rightarrow f({\bf x}) = \mathcal{w}_j.$$
 Thus $f({\bf x})$ can also be expressed as $f({\bf x}) = \sum_{j=1}^T \mathcal{w}_j I(q({\bf x}) = j)$ which is equivalent to $f({\bf x})=\mathcal{w}_{q({\bf x})}$.
@@ -53,11 +53,50 @@ and the corresponding optimal value is
 \label{eq:obj}
 \end{equation}
 
-## An example with logistic regression for binary classification
+Another difficulty for finding the optimal tree structure $q$ is that the possible ways of partition the input space is numerous. Hence, the second approximation is to use a greedy algorithm that starts from a single leaf and iteratively adds branches to the tree is used instead. This is a very common approach same as the recursive binary partitions adopted in CART [[2]](#2). Let $\tilde{\mathcal{L}}^{(t)} (R_j) = \frac{(\sum_{i \in R_j} g_j)^2}{\sum_{i \in R_j} h_j + \lambda} + \gamma$, $\eqref{eq:obj}$ can be decomposed as $\tilde{\mathcal{L}}^{(t)} (q) = -\frac{1}{2}\sum_{j=1}^T \tilde{\mathcal{L}}^{(t)} (R_j)$ which means the splitting can be processed independently across all leaves. Consider $R_L$ and $R_R$ as the disjoint left and right regions after splitting region $R$. Then the loss **reduction** after the split is given by
+\begin{align}
+\mathcal{L}_{split} = & \frac{1}{2}\left[{\mathcal{L}}^{(t)} (R) - {\mathcal{L}}^{(t+1)} (R_L) - {\mathcal{L}}^{(t+1)} (R_R) \right]\nonumber\\
+= & \frac{1}{2}\left[ \frac{\sum_{i \in R_L} g_j}{\sum_{i \in R_L} h_j + \lambda} + \frac{\sum_{i \in R_R} g_j}{\sum_{i \in R_R} h_j + \lambda} - \frac{\sum_{i \in R} g_j}{\sum_{i \in R} h_j + \lambda} \right] - \gamma.
+\label{eq:split}
+\end{align}
+The best split point will then be the one resulting in the largest value of $\eqref{eq:split}$.  
 
-## Parallel algorithms and system design
+Notice the XGBoost algorithm is different from the Gradient Tree Boosting Algorithm MART [[4]](#4) showed in the ESL book.  
+The MART is used in the $\texttt{R gbm}$ package [[2]](#2).
 
+# An example with logistic regression for binary classification
 
+# Parallel algorithms and system design
+
+<div class="algorithm">
+<pre id="quicksort" style="display:hidden;">
+    % This quicksort algorithm is extracted from Chapter 7, Introduction to Algorithms (3rd edition)
+    \begin{algorithm}
+    \caption{Quicksort}
+    \begin{algorithmic}
+    \PROCEDURE{Quicksort}{$A, p, r$}
+        \IF{$p < r$} 
+            \STATE $q = $ \CALL{Partition}{$A, p, r$}
+            \STATE \CALL{Quicksort}{$A, p, q - 1$}
+            \STATE \CALL{Quicksort}{$A, q + 1, r$}
+        \ENDIF
+    \ENDPROCEDURE
+    \PROCEDURE{Partition}{$A, p, r$}
+        \STATE $x = A[r]$
+        \STATE $i = p - 1$
+        \FOR{$j = p$ \TO $r - 1$}
+            \IF{$A[j] < x$}
+                \STATE $i = i + 1$
+                \STATE exchange
+                $A[i]$ with $A[j]$
+            \ENDIF
+            \STATE exchange $A[i]$ with $A[r]$
+        \ENDFOR
+    \ENDPROCEDURE
+    \end{algorithmic}
+    \end{algorithm}
+</pre>
+</div>
 
 ## References
 <a id="1">[1]</a> 
@@ -70,3 +109,12 @@ Hastie, T., Tibshirani, R., & Friedman, J. H. (2009). The elements of statistica
 J. Friedman, T. Hastie, and R. Tibshirani. Additive logistic
 regression: a statistical view of boosting. *Annals of
 Statistics*, pages 337–407, 2000.
+
+<a id="4">[4]</a>
+Friedman, Jerome H. Greedy function approximation: A gradient boosting machine. *Annals of
+Statistics*, 29 (2001), 1189--1232.
+
+<script>
+    pseudocode.renderElement(document.getElementById("quicksort"),
+    { lineNumber: true });
+</script>
