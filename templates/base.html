@@ -32,6 +32,26 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/github-markdown.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pygments.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/blog.css') }}">
+    
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML'>
+    </script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            TeX: {
+                equationNumbers: {autoNumber: "AMS"}
+            },
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+            }
+        });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js">
+    </script>
 
     <!-- icons -->
     <script src="https://kit.fontawesome.com/980bb169a2.js" crossorigin="anonymous"></script>
@@ -43,6 +63,12 @@
             margin: 0 auto;
             padding: 45px;
         } */
+        .algorithm {
+            margin: auto;
+            width: 80%;
+            padding: 10px;
+            /* display: inline-block; */
+        }
 
         .bd-placeholder-img {
             font-size: 1.125rem;
@@ -95,18 +121,6 @@
     </script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
-    </script>
-    <script type="text/x-mathjax-config">
-        MathJax.Hub.Config({
-          config: ["MMLorHTML.js"],
-          jax: ["input/TeX", "output/HTML-CSS", "output/NativeMML"],
-          extensions: ["MathMenu.js", "MathZoom.js"],
-          TeX: {
-            equationNumbers: {autoNumber: "AMS"}
-          }
-        });
-        </script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/MathJax.js">
     </script>
 </body>
 
