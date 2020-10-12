@@ -1,7 +1,7 @@
 ---
 title: 'Demystify XGBoost'
 date: 2020-09-14
-tags: [machine learning] 
+tags: [machine learning, gradient boosting] 
 excerpt: 'A breakdown analysis of XGBoost.'
 ---
 
@@ -55,14 +55,21 @@ and the corresponding optimal value is
 
 Another difficulty for finding the optimal tree structure $q$ is that the possible ways of partition the input space is numerous. Hence, the second approximation is to use a greedy algorithm that starts from a single leaf and iteratively adds branches to the tree is used instead. This is a very common approach same as the recursive binary partitions adopted in CART [[2]](#2). Let $\tilde{\mathcal{L}}^{(t)} (R_j) = \frac{(\sum_{i \in R_j} g_j)^2}{\sum_{i \in R_j} h_j + \lambda} + \gamma$, $\eqref{eq:obj}$ can be decomposed as $\tilde{\mathcal{L}}^{(t)} (q) = -\frac{1}{2}\sum_{j=1}^T \tilde{\mathcal{L}}^{(t)} (R_j)$ which means the splitting can be processed independently across all leaves. Consider $R_L$ and $R_R$ as the disjoint left and right regions after splitting region $R$. Then the loss **reduction** after the split is given by
 \begin{align}
-\mathcal{L}_{split} = & \frac{1}{2}\left[{\mathcal{L}}^{(t)} (R) - {\mathcal{L}}^{(t+1)} (R_L) - {\mathcal{L}}^{(t+1)} (R_R) \right]\nonumber\\
+\mathcal{L}_{split} = & \frac{1}{2}\left[{\mathcal{L}}^{(t-1)} (R) - {\mathcal{L}}^{(t)} (R_L) - {\mathcal{L}}^{(t)} (R_R) \right]\nonumber\\
 = & \frac{1}{2}\left[ \frac{\sum_{i \in R_L} g_j}{\sum_{i \in R_L} h_j + \lambda} + \frac{\sum_{i \in R_R} g_j}{\sum_{i \in R_R} h_j + \lambda} - \frac{\sum_{i \in R} g_j}{\sum_{i \in R} h_j + \lambda} \right] - \gamma.
 \label{eq:split}
 \end{align}
 The best split point will then be the one resulting in the largest value of $\eqref{eq:split}$.  
 
-Notice the XGBoost algorithm is different from the Gradient Tree Boosting Algorithm MART [[4]](#4) showed in the ESL book.  
-The MART is used in the $\texttt{R gbm}$ package [[2]](#2).
+Notice the XGBoost algorithm is different from the Gradient Tree Boosting Algorithm MART [[4]](#4) showed in the ESL book. The MART is also used in the $\texttt{R gbm}$ package [[2]](#2). Let's take a closer look at the weight udpate equation $\eqref{eq:w}$. Define $I_j=\{i|{\bf x}_i \in R_j\}$ as the instance set of leaf $j$ and $|I_j|$ as the cardinality of $I_j$. Ignoring the regularization term, we can express $\eqref{eq:w}$ as
+\begin{equation*}
+\mathcal{w}_j^* = -\frac{\frac{1}{|I_j|}\sum_{i \in I_j} g_j}{\frac{1}{|I_j|}\sum_{i \in I_j} h_j}.
+\end{equation*}
+The nominator and denominator can be considered as the estimated first and second order gradient over $R_j$ with respect to $\hat y^{(t-1)}$, the latest (accumulated) leaf weight. Does this formulation look familiar? It resembles the Newton's method in convex optimization where the update is subtracting first order gradient divided by the Hessian matrix. The MART method is using a steepest gradient descent with only first order approximation. As a result, we can expect XGBoost has a better quadratic approximation and have a better convergence rate to find the optimal weight (in theory).
+{: .alert .alert-info role='alert' }
+
+Besides the regularized objective mentioned above, two additional techniques are used to further prevent overfitting. The first technique is to shrink the weight update in $\eqref{eq:w}$ by a factor $\eta$, often times also called as learning rate. Recall the benefits of shrinkage methods such as ridge regression or Lasso? The second technique is column (feature) subsampling, a technique used in Random Forest to improve the variance reduction of bagging by reducing the correlation between the trees. The dropout technique for neural networks work the same way.
+
 
 # An example with logistic regression for binary classification
 
