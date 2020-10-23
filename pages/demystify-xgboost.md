@@ -1,5 +1,5 @@
 ---
-title: 'Demystify XGBoost'
+title: 'Demystify XGBoost: Algorithm'
 date: 2020-09-14
 tags: [machine learning, gradient boosting] 
 excerpt: 'A breakdown analysis of XGBoost.'
@@ -11,7 +11,9 @@ I was first introduced to XGBoost by one of my good friend back in 2017, same ti
 
 Earlier this year, I had a chance to write decision trees and random forests from near scratch. It was amazing that the math behind tree-based methods is so neat and "simple", yet the performance could be very good. I was able to go for an extra mile, managing to build a simple implementation of XGBoost. To do so, I had to study the original paper of XGBoost in depth (kinda, I probably only touched 30% of details). I feel it is a good time to revisit what I have done and go over what I have learned during the process.
 
-Note that various tree boosting methods exist way before the invention of XGBoost. The major contribution of XGBoost is to propose an efficient calculation, parallel tree learning algorithm and system optimizations, which combined together, resulting in a scalable end-to-end tree boosting *system*. The making of XGBoost not only requires understanding in decision tress, boosting and regularization, but also demands knowledge in computer science, particularly high performance computing.
+Note that various tree boosting methods exist way before the invention of XGBoost. The major contribution of XGBoost is to propose an efficient calculation, parallel tree learning algorithm and system optimizations, which combined together, resulting in a scalable end-to-end tree boosting *system*. The making of XGBoost not only requires understanding in decision tress, boosting and regularization, but also demands knowledge in computer science such as high performance computing and distributed system.
+
+I will go over the basic mathematics behind the tree boosting algorithm in XGBoost. Most of materials are referenced directly from the XGBoost paper. I'm writing this blog to strengthen and further my understanding of XGBoost, and at the same time to share my view of the algorithm with a few additional details that was not discussed in the original paper.
 
 # Decision trees and gradient tree boosting
 
@@ -30,7 +32,7 @@ where each $f_k$ corresponds to an independent tree structure $q$ and leaf weigh
 \end{equation}
 where $\Omega(f) = \gamma T + \frac{1}{2} \lambda ||\mathcal{w}||^2$ is a regularization term to penalize complex models with exceedingly large number of leaves and fluctuant weights to avoid over-fitting.
 
-The boosting tree model can be trained in a forward stagewise manner [[2]](#2). Let $\hat y_i^{(t)}$ denote the prediction of instance ${\bf x}_i$ at the $t$-th iteration, one need to solve $f_t$ to minimize the following:
+The boosting tree model can be trained in a forward stagewise manner [[2]](#2). Let $\hat y_i^{(t)}$ denote the prediction of instance ${\bf x}_i$ at the $t$-th iteration, by $\eqref{eq:additive}$ and $\eqref{eq:object}$, one needs to solve $f_t$ to minimize the following:
 \begin{equation}
 \mathcal{L}^{(t)} = \sum_{i=1}^n l(y_i, \hat y_i^{(t-1)} + f_t({\bf x}_i)) + \Omega(f_t).
 \label{eq:stagewise}
@@ -42,7 +44,7 @@ It is quit straightforward to calculate the $\mathcal{w}_j$ given the regions $R
 \end{equation}
 where $g_i=\partial_{\hat y_i^{(t-1)}} l(y_i, \hat y_i^{(t-1)})$ and $h_i=\partial_{\hat y_i^{(t-1)}}^2 l(y_i, \hat y_i^{(t-1)})$ are first and second order gradient, and the constant term $l(y_i, \hat y_i^{(t-1)})$ is omitted.
 
-Given $R_j$ or equivalently $q$, the paper shows the optimal weight $\mathcal{w}_j^*$ can be expressed as
+Given $R_j$ or equivalently $q$, from $\eqref{eq:stagewise1}$, the paper shows the optimal weight $\mathcal{w}_j^*$ can be expressed as
 \begin{equation}
 \mathcal{w}_j^* = -\frac{\sum_{i \in R_j} g_j}{\sum_{i \in R_j} h_j + \lambda},
 \label{eq:w}
@@ -59,53 +61,28 @@ Another difficulty for finding the optimal tree structure $q$ is that the possib
 = & \frac{1}{2}\left[ \frac{\sum_{i \in R_L} g_j}{\sum_{i \in R_L} h_j + \lambda} + \frac{\sum_{i \in R_R} g_j}{\sum_{i \in R_R} h_j + \lambda} - \frac{\sum_{i \in R} g_j}{\sum_{i \in R} h_j + \lambda} \right] - \gamma.
 \label{eq:split}
 \end{align}
-The best split point will then be the one resulting in the largest value of $\eqref{eq:split}$.  
+The best split point will then be the one resulting in the largest value of $\eqref{eq:split}$. An exact greedy algorithm of finding the split point is given as follows.
+<div align='center'>
+  <img src="{{ url_for('static', filename='image/xgboost/algo1.png') }}" style="width: 30vw;">
+</div>
 
-Notice the XGBoost algorithm is different from the Gradient Tree Boosting Algorithm MART [[4]](#4) showed in the ESL book. The MART is also used in the $\texttt{R gbm}$ package [[2]](#2). Let's take a closer look at the weight udpate equation $\eqref{eq:w}$. Define $I_j=\{i|{\bf x}_i \in R_j\}$ as the instance set of leaf $j$ and $|I_j|$ as the cardinality of $I_j$. Ignoring the regularization term, we can express $\eqref{eq:w}$ as
+Besides the regularized objective mentioned above, two additional techniques are used to further prevent overfitting. The first technique is to shrink the weight update in $\eqref{eq:w}$ by a factor $\eta$, often times also called as learning rate. Recall the benefits of shrinkage methods such as ridge regression or Lasso. The second technique is column (feature) subsampling, a technique used in Random Forest to improve the variance reduction of bagging by reducing the correlation between the trees.
+
+# A key difference with the $\texttt{R}$ $\texttt{gbm}$ package
+
+Notice the XGBoost algorithm is different from the Gradient Tree Boosting Algorithm MART [[4]](#4) showed in the ESL book. The MART is also used in the $\texttt{R}$ $\texttt{gbm}$ package [[2]](#2) besides Adaboost. Let's take a closer look at the weight update equation $\eqref{eq:w}$. Define $I_j=\{i|{\bf x}_i \in R_j\}$ as the instance set of leaf $j$ and $|I_j|$ as the cardinality of $I_j$. Suppose we fix the $R_j$ and ignore the regularization term, we can express $\eqref{eq:w}$ as
 \begin{equation*}
 \mathcal{w}_j^* = -\frac{\frac{1}{|I_j|}\sum_{i \in I_j} g_j}{\frac{1}{|I_j|}\sum_{i \in I_j} h_j}.
 \end{equation*}
-The nominator and denominator can be considered as the estimated first and second order gradient over $R_j$ with respect to $\hat y^{(t-1)}$, the latest (accumulated) leaf weight. Does this formulation look familiar? It resembles the Newton's method in convex optimization where the update is subtracting first order gradient divided by the Hessian matrix. The MART method is using a steepest gradient descent with only first order approximation. As a result, we can expect XGBoost has a better quadratic approximation and have a better convergence rate to find the optimal weight (in theory).
-{: .alert .alert-info role='alert' }
+The nominator and denominator can be considered as the estimated first and second order gradient over $R_j$ with respect to $\hat y^{(t-1)}$, the latest (accumulated) leaf weight. Does this formulation look familiar? It resembles the Newton's method in convex optimization where the update is subtracting first order gradient divided by the Hessian matrix (like the one used for solving logistic regression but in a non-parametric fashion). The MART method is using a steepest gradient descent with only first order approximation. As a result, we can expect XGBoost has a better quadratic approximation and have a better convergence rate to find the optimal weight (in theory).
+<!-- {: .alert .alert-info role='alert' } -->
 
-Besides the regularized objective mentioned above, two additional techniques are used to further prevent overfitting. The first technique is to shrink the weight update in $\eqref{eq:w}$ by a factor $\eta$, often times also called as learning rate. Recall the benefits of shrinkage methods such as ridge regression or Lasso? The second technique is column (feature) subsampling, a technique used in Random Forest to improve the variance reduction of bagging by reducing the correlation between the trees. The dropout technique for neural networks work the same way.
 
 
 # An example with logistic regression for binary classification
 
-# Parallel algorithms and system design
 
-<div class="algorithm">
-<pre id="quicksort" style="display:hidden;">
-    % This quicksort algorithm is extracted from Chapter 7, Introduction to Algorithms (3rd edition)
-    \begin{algorithm}
-    \caption{Quicksort}
-    \begin{algorithmic}
-    \PROCEDURE{Quicksort}{$A, p, r$}
-        \IF{$p < r$} 
-            \STATE $q = $ \CALL{Partition}{$A, p, r$}
-            \STATE \CALL{Quicksort}{$A, p, q - 1$}
-            \STATE \CALL{Quicksort}{$A, q + 1, r$}
-        \ENDIF
-    \ENDPROCEDURE
-    \PROCEDURE{Partition}{$A, p, r$}
-        \STATE $x = A[r]$
-        \STATE $i = p - 1$
-        \FOR{$j = p$ \TO $r - 1$}
-            \IF{$A[j] < x$}
-                \STATE $i = i + 1$
-                \STATE exchange
-                $A[i]$ with $A[j]$
-            \ENDIF
-            \STATE exchange $A[i]$ with $A[r]$
-        \ENDFOR
-    \ENDPROCEDURE
-    \end{algorithmic}
-    \end{algorithm}
-</pre>
-</div>
-
-## References
+# References
 <a id="1">[1]</a> 
 Tianqi Chen and Carlos Guestrin. XGBoost: A Scalable Tree Boosting System. In *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, pages 785–794. ACM, 2016.
 
