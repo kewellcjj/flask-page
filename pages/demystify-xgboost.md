@@ -63,12 +63,12 @@ Another difficulty for finding the optimal tree structure $q$ is that the possib
 \end{align}
 The best split point will then be the one resulting in the largest value of $\eqref{eq:split}$. An exact greedy algorithm of finding the split point is given as follows.
 <div align='center'>
-  <img src="{{ url_for('static', filename='image/xgboost/algo1.png') }}" style="width: 30vw;">
+  <img src="{{ url_for('static', filename='images/xgboost/algo1.png') }}" style="width: 30vw;">
 </div>
 
 Besides the regularized objective mentioned above, two additional techniques are used to further prevent overfitting. The first technique is to shrink the weight update in $\eqref{eq:w}$ by a factor $\eta$, often times also called as learning rate. Recall the benefits of shrinkage methods such as ridge regression or Lasso. The second technique is column (feature) subsampling, a technique used in Random Forest to improve the variance reduction of bagging by reducing the correlation between the trees.
 
-# A key difference with the $\texttt{R}$ $\texttt{gbm}$ package
+# $\texttt{R}$ $\texttt{gbm}$ comparison
 
 Notice the XGBoost algorithm is different from the Gradient Tree Boosting Algorithm MART [[4]](#4) showed in the ESL book. The MART is also used in the $\texttt{R}$ $\texttt{gbm}$ package [[2]](#2) besides Adaboost. Let's take a closer look at the weight update equation $\eqref{eq:w}$. Define $I_j=\{i|{\bf x}_i \in R_j\}$ as the instance set of leaf $j$ and $|I_j|$ as the cardinality of $I_j$. Suppose we fix the $R_j$ and ignore the regularization term, we can express $\eqref{eq:w}$ as
 \begin{equation*}
@@ -77,28 +77,37 @@ Notice the XGBoost algorithm is different from the Gradient Tree Boosting Algori
 The nominator and denominator can be considered as the estimated first and second order gradient over $R_j$ with respect to $\hat y^{(t-1)}$, the latest (accumulated) leaf weight. Does this formulation look familiar? It resembles the Newton's method in convex optimization where the update is subtracting first order gradient divided by the Hessian matrix (like the one used for solving logistic regression but in a non-parametric fashion). The MART method is using a steepest gradient descent with only first order approximation. As a result, we can expect XGBoost has a better quadratic approximation and have a better convergence rate to find the optimal weight (in theory).
 <!-- {: .alert .alert-info role='alert' } -->
 
-
-
 # An example with logistic regression for binary classification
 
+XGBoost can be used to fit various types of learning objective including linear regression, generalized linear models, cox regression and pairwise ranking [[5]](#5). Here we will briefly discuss how to derive the weight update in $\eqref{eq:w}$.
+
+Let $y_i$ denote the binary response 0 or 1 for the $i$th observation $\bf x_i$. Let $y_i^{(t)}$ denote the accumulated weight for $\bf x_i$ after the $t$th iteration, that is $y_i^{(t)} = y_i^{(t-1)} + \mathcal{w}_j^{*(t)}$ where $\mathcal{w}_j^{*(t)}$ is the update given in $\eqref{eq:w}$ with $i \in R_j$. We will hide the superscript of $t$ from now on. By the logit link function, we have $p_i = \frac{1}{1+e^{-\hat y_i}}$ as probability estimate for $y_i = 1$. 
+
+For logistic regression, the "coefficients" are estimated based on maximum likelihood. More specifically, we will choose to minimize the negative log-likelihood function in $\eqref{eq:object}$ as
+\begin{align}
+l(y_i, \hat y_i)  & = y_i \log p_i + (1-y_i) \log (1 - p_i) \nonumber \\
+& = y_i \hat y_i - \log (1 + e^{\hat y_i}). \nonumber
+\end{align}
+The first and second order gradients immediately follows:
+\begin{equation*}
+g_i = y_i - \frac{1}{1+e^{-\hat y_i}} = y_i - p_i \mbox{ and } h_i = -\frac{e^{-\hat y_i}}{(1+e^{-\hat y_i})^2} = -p_i(1-p_i).
+\end{equation*}
+
+We can then use the exact greedy algorithm to find all splitting points and partition the input space into $R_j$s. Finally, calculate the corresponding $\mathcal{w}_j^*$ based on the gradient information derived above.
 
 # References
 <a id="1">[1]</a> 
-Tianqi Chen and Carlos Guestrin. XGBoost: A Scalable Tree Boosting System. In *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, pages 785–794. ACM, 2016.
+T. Chen and C. Guestrin. XGBoost: A Scalable Tree Boosting System. In *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, pages 785-794, 2016.
 
 <a id="2">[2]</a> 
-Hastie, T., Tibshirani, R., & Friedman, J. H. (2009). The elements of statistical learning: data mining, inference, and prediction. 2nd ed. New York: Springer.
+T. Hastie, R. Tibshirani, and J. Friedman. The elements of statistical learning: data mining, inference, and prediction. 2nd ed. New York: Springer.
 
 <a id="3">[3]</a> 
-J. Friedman, T. Hastie, and R. Tibshirani. Additive logistic
-regression: a statistical view of boosting. *Annals of
-Statistics*, pages 337–407, 2000.
+J. Friedman, T. Hastie, and R. Tibshirani. Additive logistic regression: a statistical view of boosting. *Annals of Statistics*, pages 337-407, 2000.
 
 <a id="4">[4]</a>
 Friedman, Jerome H. Greedy function approximation: A gradient boosting machine. *Annals of
-Statistics*, 29 (2001), 1189--1232.
+Statistics*, pages 1189-1232, 2001.
 
-<script>
-    pseudocode.renderElement(document.getElementById("quicksort"),
-    { lineNumber: true });
-</script>
+<a id="4">[5]</a>
+[XGBoost Documentation](https://xgboost.readthedocs.io/en/latest/index.html)
