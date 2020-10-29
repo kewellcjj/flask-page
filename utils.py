@@ -86,6 +86,6 @@ def index_summary(pages):
             dates[mmyyyy] += 1
 
     sorted_tags = sorted(tags.items(), reverse = True, key = lambda x: x[1])
-    sorted_dates = sorted(dates.items(), reverse = True, key = lambda x: x[1])
+    sorted_dates = sorted(dates.items(), reverse = True, key = lambda x: x[0])
 
     return sorted_tags, sorted_dates
