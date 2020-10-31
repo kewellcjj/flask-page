@@ -1,0 +1,293 @@
+<!doctype html>
+<html>
+
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-149418366-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-149418366-1');
+    </script>
+    <meta charset="utf-8">
+    
+
+<title>XGBoost: the Algorithm</title>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Indie+Flower|Lato|Liu+Jian+Mao+Cao|Rock+Salt&display=swap" rel="stylesheet">
+
+    <!-- blog css -->
+    <link rel="stylesheet" href="/static/css/github-markdown.css">
+    <link rel="stylesheet" href="/static/css/pygments.css">
+    <link rel="stylesheet" href="/static/css/blog.css">
+    
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML'>
+    </script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            TeX: {
+                equationNumbers: {autoNumber: "AMS"}
+            },
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+            }
+        });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js">
+    </script>
+
+    <!-- icons -->
+    <script src="https://kit.fontawesome.com/980bb169a2.js" crossorigin="anonymous"></script>
+    <style>
+        /* .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        } */
+        .algorithm {
+            margin: auto;
+            width: 80%;
+            padding: 10px;
+            /* display: inline-block; */
+        }
+
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body data-gr-c-s-loaded="true">
+    <div class="container">
+        <header class="blog-header py-3">
+            <div class="row flex-nowrap justify-content-between align-items-center">
+                <div class="col-4">
+                    <!-- <i class="fab fa-github"></i><a href="https://github.com/kewellcjj" class="p-2 text-dark">GitHub</a> -->
+                </div>
+                <div class="col-4 text-center">
+                    <a class="blog-header-logo text-dark" href="/">Jiajie Chen</a>
+                </div>
+                <div class="col-4 d-flex justify-content-end align-items-center">
+                    <a href="/about/" class="p-2 text-dark float-right">About</a>
+                    <a href="/" class="p-2 text-dark float-right">Blog</a>
+                </div>
+            </div>
+        </header>
+        <!-- <main role="main" clss="container"> -->
+        
+<main role="main" clss="container">
+    <div class="row">
+        <div class="col-md-9 blog-main p-4">
+            
+            
+            <div class="blog-post mb-2">
+                <h2 class="blog-post-tile">
+                    
+                    XGBoost: the Algorithm
+                    
+                </h2>
+                <p class="blog-post-meta">September 14, 2020</p>
+                
+                <span class="text-info">
+                <i class="fas fa-tags"></i></span>
+                
+                <a href="/blog/tag/machine%20learning/" class="badge badge-info">Machine learning</a>
+                
+                <a href="/blog/tag/gradient%20boosting/" class="badge badge-info">Gradient boosting</a>
+                
+                
+                
+                <div  class="markdown-body">
+                <p><p>XGBoost (eXtreme Gradient Boosting) is a machine learning tool that achieves high prediction accuracies and computation efficiency. Since its initial release in 2014, it has gained huge popularity among academia and industry, becoming one of the most cited machine learning library (7k+ paper citation and 20k stars on GitHub). </p>
+<p>I was first introduced to XGBoost by one of my good friends back in 2017, the same time as I started to work on some Kaggle competitions. XGBoost quickly became my go-to approach as often times I could achieve reasonable performance without much hyperparameter tuning. In fact, XGBoost is the winningest method in Kaggle and KDDCup competitions during 2015, outperforming the second most popular method neural nets <a href="#1">[1]</a>.</p>
+<p>Earlier this year, I had a chance to write decision trees and random forests from near scratch. It was amazing that the math behind tree-based methods is so neat and "simple", yet the performance could be very good. I was able to go for an extra mile, managing to build a simple implementation of XGBoost. To do so, I had to study the original paper of XGBoost in depth (I probably only touched 30% of the details). I feel it is a good time to revisit what I have learned during the process.</p>
+<p>Note that various tree boosting methods exist way before the invention of XGBoost. The major contribution of XGBoost is to propose an efficient parallel tree learning algorithm, and system optimizations, which combined together, resulting in a scalable end-to-end tree boosting <em>system</em>. The making of XGBoost not only requires understanding in decision trees, boosting, and regularization but also demands knowledge in computer science such as high-performance computing and distributed systems.</p>
+<p>I will go over the basic mathematics behind the tree boosting algorithm in XGBoost. Most of the materials are referenced directly from the XGBoost paper. I'm writing this blog to strengthen and further my understanding of XGBoost, and at the same time to share my view of the algorithm.</p>
+<h2 id="decision-trees-and-gradient-tree-boosting">Decision trees and gradient tree boosting</h2>
+<p>We will follow the notation from the paper. Consider a dataset with <script type="math/tex">n</script> examples and <script type="math/tex">m</script> features <script type="math/tex">\mathcal{D} = \{({\bf x}_i, y_i)\} (|\mathcal{D}|=n, {\bf x}_i \in \mathbb{R}^m, y_i \in \mathbb{R})</script>. Let <script type="math/tex">\mathcal{F} = \{f({\bf x})=\mathcal{w}_{q({\bf x})}\}(q: \mathbb{R}^m \rightarrow T, \mathcal{w} \in \mathbb{R}^T)</script> denote the space of regression trees, where <script type="math/tex">T</script> is the number of leaves in the tree, <script type="math/tex">q</script> represents a possible structures of the tree that maps <script type="math/tex">{\bf x}</script> to the corresponding leaf index, <script type="math/tex">\mathcal{w}</script> is the leaf weight given the observation <script type="math/tex">{\bf x}</script> and a tree structure <script type="math/tex">q</script>. A key step of any decision tree algorithms is to determine the best structure <script type="math/tex">q</script> by continuously splitting the leaves (binary partition) according to certain criterion, such as sum of squared errors for regression trees, gini index or cross-entropy for classification trees. Finding the best split is also the key algorithm for XGBoost. In fact, all algorithms listed in the paper are related to split finding. The resulting split points will partition the input space into disjoint regions <script type="math/tex">R_j=\{  {\bf x} | q({\bf x}) = j\}</script> as represented by leaf <script type="math/tex">j</script>. A constant <script type="math/tex">\mathcal{w}_j</script> is then assigned to leaf <script type="math/tex">j</script>, that is <script type="math/tex; mode=display">{\bf x} \in R_j \Rightarrow f({\bf x}) = \mathcal{w}_j.</script>
+Thus <script type="math/tex">f({\bf x})</script> can also be expressed as <script type="math/tex">f({\bf x}) = \sum_{j=1}^T \mathcal{w}_j I(q({\bf x}) = j)</script> which is equivalent to <script type="math/tex">f({\bf x})=\mathcal{w}_{q({\bf x})}</script>.</p>
+<p>Now we can represent a tree ensemble model as a sum of <script type="math/tex">K</script> additive tree functions: 
+<script type="math/tex; mode=display">\begin{equation}
+  \hat y_i = \phi({\bf x}_i) = \sum_{k=1}^K f_k({\bf x}_i), \quad f_k \in \mathcal{F},
+  \label{eq:additive}
+\end{equation}</script>
+where each <script type="math/tex">f_k</script> corresponds to an independent tree structure <script type="math/tex">q</script> and leaf weight <script type="math/tex">\mathcal{w}</script>. The optimal tree structures and weights are then learned by minimizing the following object.
+<script type="math/tex; mode=display">\begin{equation}
+  \mathcal{L}(\phi) = \sum_{i} l(\hat y_i, y_i) + \sum_k \Omega(f_k),
+  \label{eq:object}
+\end{equation}</script>
+where <script type="math/tex">\Omega(f) = \gamma T + \frac{1}{2} \lambda ||\mathcal{w}||^2</script> is a regularization term to penalize complex models with exceedingly large number of leaves and fluctuant weights to avoid over-fitting.</p>
+<p>The boosting tree model can be trained in a forward stagewise manner <a href="#2">[2]</a>. Let <script type="math/tex">\hat y_i^{(t)}</script> denote the prediction of instance <script type="math/tex">{\bf x}_i</script> at the <script type="math/tex">t</script>-th iteration, by <script type="math/tex">\eqref{eq:additive}</script> and <script type="math/tex">\eqref{eq:object}</script>, one needs to solve <script type="math/tex">f_t</script> to minimize the following:
+<script type="math/tex; mode=display">\begin{equation}
+\mathcal{L}^{(t)} = \sum_{i=1}^n l(y_i, \hat y_i^{(t-1)} + f_t({\bf x}_i)) + \Omega(f_t).
+\label{eq:stagewise}
+\end{equation}</script>
+It is quit straightforward to calculate the <script type="math/tex">\mathcal{w}_j</script> given the regions <script type="math/tex">R_j</script>. On the contrary, finding the best <script type="math/tex">R_j</script> which minimize <script type="math/tex">\eqref{eq:stagewise}</script> could be a very difficult task for general loss functions. To find an approximate yet reasonably good solution, we first need to find a more convenient ("easy") criterion. Here is where numerical optimization via gradient boosting comes into play. A second-order approximation of loss function was used to show that the AdaBoost algorithm is equivalent to a forward stagewise additive modeling procedure with exponential loss <a href="#3">[3]</a>. The XGBoost paper borrowed this idea to approximate the objective <script type="math/tex">\eqref{eq:stagewise}</script> by
+<script type="math/tex; mode=display">\begin{equation}
+\tilde{\mathcal{L}}^{(t)} \simeq \sum_{i=1}^n [g_i f_t({\bf x}_i) + \frac{1}{2} h_i f_t^2({\bf x}_i)] + \Omega(f_t),
+\label{eq:stagewise1}
+\end{equation}</script>
+where <script type="math/tex">g_i=\partial_{\hat y_i^{(t-1)}} l(y_i, \hat y_i^{(t-1)})</script> and <script type="math/tex">h_i=\partial_{\hat y_i^{(t-1)}}^2 l(y_i, \hat y_i^{(t-1)})</script> are first and second order gradient, and the constant term <script type="math/tex">l(y_i, \hat y_i^{(t-1)})</script> is omitted.</p>
+<p>Given <script type="math/tex">R_j</script> or equivalently <script type="math/tex">q</script>, from <script type="math/tex">\eqref{eq:stagewise1}</script>, the paper shows the optimal weight <script type="math/tex">\mathcal{w}_j^*</script> in <script type="math/tex">f_t({\bf x_i})</script> can be expressed as
+<script type="math/tex; mode=display">\begin{equation}
+\mathcal{w}_j^* = -\frac{\sum_{i \in R_j} g_j}{\sum_{i \in R_j} h_j + \lambda},
+\label{eq:w}
+\end{equation}</script>
+and the corresponding optimal value is
+<script type="math/tex; mode=display">\begin{equation}
+\tilde{\mathcal{L}}^{(t)} (q) = -\frac{1}{2}\sum_{j=1}^T \frac{(\sum_{i \in R_j} g_j)^2}{\sum_{i \in R_j} h_j + \lambda} + \gamma T.
+\label{eq:obj}
+\end{equation}</script>
+</p>
+<p>Another difficulty for finding the optimal tree structure <script type="math/tex">q</script> is that the possible ways of partition the input space is numerous. Hence, the second approximation is to use a greedy algorithm that starts from a single leaf and iteratively adds branches to the tree. This is a very common approach same as the recursive binary partitions adopted in CART <a href="#2">[2]</a>. Let <script type="math/tex">\tilde{\mathcal{L}}^{(t)} (R_j) = \frac{(\sum_{i \in R_j} g_j)^2}{\sum_{i \in R_j} h_j + \lambda} + \gamma</script>, <script type="math/tex">\eqref{eq:obj}</script> can be decomposed as <script type="math/tex">\tilde{\mathcal{L}}^{(t)} (q) = -\frac{1}{2}\sum_{j=1}^T \tilde{\mathcal{L}}^{(t)} (R_j)</script> which means the splitting can be processed independently across all leaves (parallelism!). Consider <script type="math/tex">R_L</script> and <script type="math/tex">R_R</script> as the disjoint left and right regions after splitting region <script type="math/tex">R</script>. Then the loss <em>reduction</em> after the split is given by
+<script type="math/tex; mode=display">\begin{align}
+\mathcal{L}_{split} = & \frac{1}{2}\left[{\mathcal{L}}^{(t-1)} (R) - {\mathcal{L}}^{(t)} (R_L) - {\mathcal{L}}^{(t)} (R_R) \right]\nonumber\\
+= & \frac{1}{2}\left[ \frac{\sum_{i \in R_L} g_j}{\sum_{i \in R_L} h_j + \lambda} + \frac{\sum_{i \in R_R} g_j}{\sum_{i \in R_R} h_j + \lambda} - \frac{\sum_{i \in R} g_j}{\sum_{i \in R} h_j + \lambda} \right] - \gamma.
+\label{eq:split}
+\end{align}</script>
+The best split point will then be the one resulting in the largest value of <script type="math/tex">\eqref{eq:split}</script>. An exact greedy algorithm of finding the split point is given as follows.
+<div align='center'>
+  <img src="/static/images/xgboost/algo1.png" style="width: 30vw;">
+</div></p>
+<p>Besides the regularized objective mentioned in <script type="math/tex">\eqref{eq:object}</script>, two additional techniques are used to further prevent overfitting. The first technique is to shrink the weight update in <script type="math/tex">\eqref{eq:w}</script> by a factor <script type="math/tex">\eta</script>, oftentimes also called a learning rate. (Recall the benefits of shrinkage methods such as ridge regression or Lasso.) The second technique is column (feature) subsampling, a technique used in Random Forest to improve the variance reduction of bagging by reducing the correlation between the trees.</p>
+<h2 id="textttr-textttgbm-comparison">
+<script type="math/tex">\texttt{R}</script>
+<script type="math/tex">\texttt{gbm}</script> comparison</h2>
+<p>Notice the XGBoost algorithm is different from the Gradient Tree Boosting Algorithm MART <a href="#4">[4]</a> showed in the ESL book. The MART is also used in the <script type="math/tex">\texttt{R}</script>
+<script type="math/tex">\texttt{gbm}</script> package <a href="#2">[2]</a> besides Adaboost. Let's take a closer look at the weight update equation <script type="math/tex">\eqref{eq:w}</script>. Define <script type="math/tex">I_j=\{i|{\bf x}_i \in R_j\}</script> as the instance set of leaf <script type="math/tex">j</script> and <script type="math/tex">|I_j|</script> as the cardinality of <script type="math/tex">I_j</script>. Suppose we fix the <script type="math/tex">R_j</script> and ignore the regularization term, we can express <script type="math/tex">\eqref{eq:w}</script> as
+<script type="math/tex; mode=display">\begin{equation*}
+\mathcal{w}_j^* = -\frac{\frac{1}{|I_j|}\sum_{i \in I_j} g_j}{\frac{1}{|I_j|}\sum_{i \in I_j} h_j}.
+\end{equation*}</script>
+The nominator and denominator can be considered as the estimated first and second-order gradient over <script type="math/tex">R_j</script> with respect to <script type="math/tex">\hat y^{(t-1)}</script>, the latest (accumulated) leaf weight. Does this formulation look familiar? It resembles Newton's method in convex optimization where the update is subtracting the first-order gradient divided by the Hessian matrix (like the one used for solving logistic regression but in a non-parametric fashion). The MART method is using the steepest gradient descent with only first-order approximation. As a result, we can expect XGBoost has a better quadratic approximation and have a better convergence rate to find the optimal weight (in theory).
+<!-- {: .alert .alert-info role='alert' } --></p>
+<h2 id="an-example-with-logistic-regression-for-binary-classification">An example with logistic regression for binary classification</h2>
+<p>XGBoost can be used to fit various types of learning objectives including linear regression, generalized linear models, cox regression, and pairwise ranking <a href="#5">[5]</a>. Here we will briefly discuss how to derive the weight update in <script type="math/tex">\eqref{eq:w}</script> for logistic regression.</p>
+<p>Let <script type="math/tex">y_i</script> denote the binary response 0 or 1 for the <script type="math/tex">i</script>th observation <script type="math/tex">\bf x_i</script>. Let <script type="math/tex">y_i^{(t)}</script> denote the accumulated weight for <script type="math/tex">\bf x_i</script> after the <script type="math/tex">t</script>th iteration, that is <script type="math/tex">y_i^{(t)} = y_i^{(t-1)} + \mathcal{w}_j^{*(t)}</script> where <script type="math/tex">\mathcal{w}_j^{*(t)}</script> is the update given in <script type="math/tex">\eqref{eq:w}</script> with <script type="math/tex">i \in R_j</script>. We will hide the superscript of <script type="math/tex">t</script> from now on. By the logit link function, we have <script type="math/tex">p_i = \frac{1}{1+e^{-\hat y_i}}</script> as probability estimate for <script type="math/tex">y_i = 1</script>. </p>
+<p>For logistic regression, the "coefficients" are estimated based on maximum likelihood. More specifically, we will choose to minimize the negative log-likelihood function in <script type="math/tex">\eqref{eq:object}</script> as
+<script type="math/tex; mode=display">\begin{align}
+l(y_i, \hat y_i)  & = -y_i \log p_i - (1-y_i) \log (1 - p_i) \nonumber \\
+& = -y_i \hat y_i + \log (1 + e^{\hat y_i}). \nonumber
+\end{align}</script>
+The first and second order gradients immediately follows:
+<script type="math/tex; mode=display">\begin{equation*}
+g_i = -y_i + \frac{1}{1+e^{-\hat y_i}} = -y_i + p_i \mbox{ and } h_i = \frac{e^{-\hat y_i}}{(1+e^{-\hat y_i})^2} = p_i(1-p_i).
+\end{equation*}</script>
+</p>
+<p>We can then use the exact greedy algorithm to find all splitting points and partition the input space into <script type="math/tex">R_j</script>s. Finally, calculate the corresponding <script type="math/tex">\mathcal{w}_j^*</script> based on the gradient information derived above.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this post, we briefly go over the key algorithm in XGBoost to find the splitting points in boosting trees. The idea is behind quadratic approximation on the loss function, and the resulting algorithm and weight update are intuitive and straightforward. Without a doubt, the exact greedy algorithm discussed here alone is not good enough for a system with "eXtreme" in its name. What happens when the data is too large to be fit into the memory? Can we scale the algorithm using parallel and distributed computing? How do we efficiently store and process a sparse dataset? All the answers can be found in the second half of the paper with more implementation details in the Author's presentations and of course, the Xgboost repository on GitHub. Although some of the related system and computation topics are beyond my current knowledge, it is definitely worth trying to understand the basic tools and ideas. I hope I could make a follow-up post to discuss high-performance computing concepts used in XGBoost when I feel more confident in the subject in the near future.</p>
+<h2 id="references">References</h2>
+<p><a id="1">[1]</a> 
+T. Chen and C. Guestrin. XGBoost: A Scalable Tree Boosting System. In <em>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>, pages 785-794, 2016.</p>
+<p><a id="2">[2]</a> 
+T. Hastie, R. Tibshirani, and J. Friedman. The elements of statistical learning: data mining, inference, and prediction. 2nd ed. New York: Springer.</p>
+<p><a id="3">[3]</a> 
+J. Friedman, T. Hastie, and R. Tibshirani. Additive logistic regression: a statistical view of boosting. <em>Annals of Statistics</em>, pages 337-407, 2000.</p>
+<p><a id="4">[4]</a>
+J. Friedman. Greedy function approximation: A gradient boosting machine. <em>Annals of
+Statistics</em>, pages 1189-1232, 2001.</p>
+<p><a id="4">[5]</a>
+<a href="https://xgboost.readthedocs.io/en/latest/index.html">XGBoost Documentation</a></p></p>
+            </div>
+                
+            </div>
+            <hr>
+            
+        </div>
+        <aside class="col-md-3 blog-sidebar">
+            <div class="p-4">
+                <h4 class="font-italic">Tags</h4>
+                <ol class="list-unstyled mb-0">
+                    
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/markdown/" class="badge badge-info">Markdown<!-- (2)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/cheatsheet/" class="badge badge-info">Cheatsheet<!-- (1)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/machine%20learning/" class="badge badge-info">Machine learning<!-- (1)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/gradient%20boosting/" class="badge badge-info">Gradient boosting<!-- (1)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/flask/" class="badge badge-info">Flask<!-- (1)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/python/" class="badge badge-info">Python<!-- (1)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/github/" class="badge badge-info">Github<!-- (1)--></a>
+                    
+                    
+                </ol>
+            </div>
+            <div class="p-4">
+                <h4 class="font-italic">Archives</h4>
+                <ol class="list-unstyled mb-0">
+                    
+                    
+                    <li><a href="/blog/archive/September%202020/" class="text-dark">September 2020<!-- (1)--></a></li>
+                    
+                    <li><a href="/blog/archive/September%202019/" class="text-dark">September 2019<!-- (3)--></a></li>
+                    
+                    
+                </ol>
+            </div>
+            <div class="p-4">
+                    <h4 class="font-italic">Elsewhere</h4>
+                    <ol class="list-unstyled mb-0">
+                        <a href="https://github.com/kewellcjj" target="_blank"><i class="fab fa-github fa-2x p-2 text-dark" title="GitHub"></i></a>
+                        <a href="https://www.linkedin.com/in/jiajie-chen/" target="_blank"><i class="fab fa-linkedin fa-2x p-2 text-dark" title="Linkedin"></i></a>
+                        <a href="https://scholar.google.com/citations?user=I2AmPBMAAAAJ&hl=en" target="_blank"><i class="fab fa-google fa-2x p-2 text-dark" title="Google Scholar"></i></a>
+                    </ol>
+                </div>
+        </aside>
+    </div>
+</main>
+
+        <!-- </main> -->
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+</body>
+
+</html>

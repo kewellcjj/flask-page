@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-149418366-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-149418366-1');
+    </script>
+    <meta charset="utf-8">
+    
+
+<title>XGBoost: the Algorithm</title>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Indie+Flower|Lato|Liu+Jian+Mao+Cao|Rock+Salt&display=swap" rel="stylesheet">
+
+    <!-- blog css -->
+    <link rel="stylesheet" href="/static/css/github-markdown.css">
+    <link rel="stylesheet" href="/static/css/pygments.css">
+    <link rel="stylesheet" href="/static/css/blog.css">
+    
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML'>
+    </script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            TeX: {
+                equationNumbers: {autoNumber: "AMS"}
+            },
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+            }
+        });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js">
+    </script>
+
+    <!-- icons -->
+    <script src="https://kit.fontawesome.com/980bb169a2.js" crossorigin="anonymous"></script>
+    <style>
+        /* .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        } */
+        .algorithm {
+            margin: auto;
+            width: 80%;
+            padding: 10px;
+            /* display: inline-block; */
+        }
+
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body data-gr-c-s-loaded="true">
+    <div class="container">
+        <header class="blog-header py-3">
+            <div class="row flex-nowrap justify-content-between align-items-center">
+                <div class="col-4">
+                    <!-- <i class="fab fa-github"></i><a href="https://github.com/kewellcjj" class="p-2 text-dark">GitHub</a> -->
+                </div>
+                <div class="col-4 text-center">
+                    <a class="blog-header-logo text-dark" href="/">Jiajie Chen</a>
+                </div>
+                <div class="col-4 d-flex justify-content-end align-items-center">
+                    <a href="/about/" class="p-2 text-dark float-right">About</a>
+                    <a href="/" class="p-2 text-dark float-right">Blog</a>
+                </div>
+            </div>
+        </header>
+        <!-- <main role="main" clss="container"> -->
+        
+<main role="main" clss="container">
+    <div class="row">
+        <div class="col-md-9 blog-main p-4">
+            
+            <h3 class="pb-4 mb-4 font-italic border-bottom">
+                Recent Posts Tagged Gradient Boosting
+            </h3>
+            
+            
+            <div class="blog-post mb-2">
+                <h2 class="blog-post-tile">
+                    
+                    <a href="/blog/demystify-xgboost/" style='color: #000;'>XGBoost: the Algorithm</a>
+                    
+                </h2>
+                <p class="blog-post-meta">September 14, 2020</p>
+                
+                <span class="text-info">
+                <i class="fas fa-tags"></i></span>
+                
+                <a href="/blog/tag/machine%20learning/" class="badge badge-info">Machine learning</a>
+                
+                <a href="/blog/tag/gradient%20boosting/" class="badge badge-info">Gradient boosting</a>
+                
+                
+                
+                <div  class="markdown-body">
+                <p><p>A breakdown analysis of XGBoost's tree boosting algorithm.</p></p>
+            </div>
+            <!-- <p>
+                <a href="/blog/demystify-xgboost/" class="text-primary">Read More</a>
+            </p> -->
+                
+            </div>
+            <hr>
+            
+        </div>
+        <aside class="col-md-3 blog-sidebar">
+            <div class="p-4">
+                <h4 class="font-italic">Tags</h4>
+                <ol class="list-unstyled mb-0">
+                    
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/markdown/" class="badge badge-info">Markdown<!-- (2)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/cheatsheet/" class="badge badge-info">Cheatsheet<!-- (1)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/machine%20learning/" class="badge badge-info">Machine learning<!-- (1)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/gradient%20boosting/" class="badge badge-info">Gradient boosting<!-- (1)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/flask/" class="badge badge-info">Flask<!-- (1)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/python/" class="badge badge-info">Python<!-- (1)--></a>
+                    
+                    <!--<i class="fas fa-tags text-info"></i> --><a href="/blog/tag/github/" class="badge badge-info">Github<!-- (1)--></a>
+                    
+                    
+                </ol>
+            </div>
+            <div class="p-4">
+                <h4 class="font-italic">Archives</h4>
+                <ol class="list-unstyled mb-0">
+                    
+                    
+                    <li><a href="/blog/archive/September%202020/" class="text-dark">September 2020<!-- (1)--></a></li>
+                    
+                    <li><a href="/blog/archive/September%202019/" class="text-dark">September 2019<!-- (3)--></a></li>
+                    
+                    
+                </ol>
+            </div>
+            <div class="p-4">
+                    <h4 class="font-italic">Elsewhere</h4>
+                    <ol class="list-unstyled mb-0">
+                        <a href="https://github.com/kewellcjj" target="_blank"><i class="fab fa-github fa-2x p-2 text-dark" title="GitHub"></i></a>
+                        <a href="https://www.linkedin.com/in/jiajie-chen/" target="_blank"><i class="fab fa-linkedin fa-2x p-2 text-dark" title="Linkedin"></i></a>
+                        <a href="https://scholar.google.com/citations?user=I2AmPBMAAAAJ&hl=en" target="_blank"><i class="fab fa-google fa-2x p-2 text-dark" title="Google Scholar"></i></a>
+                    </ol>
+                </div>
+        </aside>
+    </div>
+</main>
+
+        <!-- </main> -->
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+</body>
+
+</html>
