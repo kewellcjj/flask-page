@@ -1,5 +1,5 @@
 ---
-title: 'XGBoost: the Algorithm'
+title: 'XGBoost: Algorithm'
 date: 2020-09-14
 tags: [machine learning, gradient boosting] 
 excerpt: "A breakdown analysis of XGBoost's tree boosting algorithm."
