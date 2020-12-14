@@ -79,7 +79,7 @@ def index_summary(pages):
                 tags[tag] += 1
 
         #collect publish dates
-        mmyyyy = p.meta.get('date','').strftime("%B %Y")
+        mmyyyy = p.meta.get('date','').replace(day=1)
         if mmyyyy not in dates:
             dates[mmyyyy] = 1
         else:
@@ -87,5 +87,7 @@ def index_summary(pages):
 
     sorted_tags = sorted(tags.items(), reverse = True, key = lambda x: x[1])
     sorted_dates = sorted(dates.items(), reverse = True, key = lambda x: x[0])
+
+    sorted_dates = [(d[0].strftime("%B %Y"), d[1]) for d in sorted_dates]
 
     return sorted_tags, sorted_dates
