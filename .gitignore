@@ -1,6 +1,7 @@
-build/
+notebook/
 .vscode/
 archive/
 __pycache__/
 kewellcjj.github.io/
 .ipynb_checkpoints
+static/images
